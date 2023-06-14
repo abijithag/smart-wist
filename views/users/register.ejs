@@ -1,0 +1,38 @@
+<%- include('../layouts/header.ejs') %>
+<link rel="stylesheet" href="css/registration.css">
+  <div class="container">
+    <h1>Create New Customer Account</h1>
+    <div class="form-box">
+      <form class="registration-form" method="post" action="/register">
+        <div class="form-group">
+          <label for="firstName">First Name:</label>
+          <input type="text" id="firstName" name="fname" required>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name:</label>
+          <input type="text" id="lastName" name="lname" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="mobileNumber">Mobile Number:</label>
+          <input type="tel" id="mobileNumber" name="mno" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+
+        <button type="submit" class="submit-button">Create New Account</button>
+      </form>
+      <p><%=(typeof message!=='undefined')?message:""%></p>
+    </div>
+  </div>
+</body>
+<%- include('../layouts/footer.ejs') %>

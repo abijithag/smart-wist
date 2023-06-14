@@ -1,0 +1,93 @@
+<!-- <%- include('../layouts/header.ejs') %>
+<link rel="stylesheet" href="css/verifyOtp.css">
+<body>
+    <form action="/verifyOtp" method="post">
+    <div class="container">
+        <h2>OTP</h2>
+       
+        <div class="input-field">
+            <input type="text" id="otp" name="otp" placeholder="Enter the OTP" required>
+        </div>
+        <div class="input-field">
+            <button type="submit">Submit</button>
+        </div>
+        </form>
+        <p><%=(typeof message!=='undefined')?message:""%></p>
+        <p id="countdown">60</p>
+        <p id="resend-link" style="display: none;">
+         <a href="/resendOtp">Resend OTP</a>
+        </p>
+
+    </div>
+</body>
+<script>
+    function startCountdown() {
+      // Set the countdown time to 1 minute (60 seconds)
+      var countdownTime = 10;
+
+      // Update the countdown timer every second
+      var countdownTimer = setInterval(function() {
+        countdownTime--;
+
+        // Display the remaining time in the countdown element
+        document.getElementById("countdown").innerText = countdownTime;
+
+        // Check if the countdown has reached 0
+        if (countdownTime <= 0) {
+          // Stop the countdown timer
+          clearInterval(countdownTimer);
+
+          // Show the "Resend OTP" link
+          document.getElementById("resend-link").style.display = "inline";
+        }
+      }, 1000);
+    }
+  </script>
+<%- include('../layouts/footer.ejs') %> -->
+
+
+<%- include('../layouts/header.ejs') %>
+    <link rel="stylesheet" href="css/verifyOtp.css">
+
+    <body>
+        <form action="/verifyOtp" method="post">
+            <div class="container">
+                <h2>OTP</h2>
+
+                <div class="input-field">
+                    <input type="text" id="otp" name="otp" placeholder="Enter the OTP" required>
+                </div>
+                <div class="input-field">
+                    <button type="submit">Submit</button>
+                </div>
+                <div id="countdown" style="display: none;"></div>
+                <a href="/resendOtp" id="resendLink" style="display: none;">Resend OTP</a>
+            </div>
+        </form>
+    </body>
+
+    <%- include('../layouts/footer.ejs') %>
+
+    <script>
+        var timeLeft = 10; // Set the countdown time in seconds
+
+        function startCountdown() {
+            var countdownElement = document.getElementById('countdown');
+            var resendLink = document.getElementById('resendLink');
+
+            countdownElement.style.display = 'inline';
+            resendLink.style.display = 'none';
+
+            var countdownInterval = setInterval(function() {
+                timeLeft--;
+                countdownElement.textContent = 'Resend OTP in ' + timeLeft + ' seconds';
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownElement.style.display = 'none';
+                    resendLink.style.display = 'inline';
+                }
+            }, 1000);
+        }
+        startCountdown()
+    </script>
