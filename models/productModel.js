@@ -24,6 +24,10 @@ const productSchema = new mongoose.Schema({
   isListed:{
     type:Boolean,
     default:true
+  },
+  isProductListed:{
+    type:Boolean,
+    default:true
   }
 });
 

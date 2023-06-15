@@ -2,7 +2,7 @@ const Admin = require('../models/adminModel')
 const User = require('../models/userModel')
 const Product = require('../models/productModel')
 const Category = require('../models/categoryModel')
-
+const categoryHelper = require('../helpers/categoryHelper')
 
 const loadCategory = async(req,res)=>{
     try {
@@ -16,8 +16,7 @@ const loadCategory = async(req,res)=>{
 
 const createCategory = async(req, res)=>{
     try {
-      const category = new Category({name:req.body.name,description:req.body.description});
-      const savedCategory = await category.save();
+      await categoryHelper.createCategory(req.body)
       res.redirect('/admin/category')
     } catch (error) {
       console.log(error.message)
@@ -29,9 +28,7 @@ const createCategory = async(req, res)=>{
   const loadUpdateCategory = async(req,res)=>{
     try {
       const id = req.query.id
-  
-      const Categorydata = await Category.findById({_id:id})
-  
+      const Categorydata = await categoryHelper.loadUpdateCategory(id)
       res.render('updateCategory',{category:Categorydata})
     } catch (error) {
       console.log(error.message)
@@ -42,8 +39,8 @@ const createCategory = async(req, res)=>{
   async function updateCategory(req, res) {
   
     try {
-      const categoryId  = req.body.id;
-      const updatedCategory = await Category.findByIdAndUpdate({_id:categoryId},{$set:{name:req.body.category,description:req.body.description}});
+      const categoryId  = req.body.id
+      await categoryHelper.updateCategory(categoryId)
       res.redirect('/admin/category')
     } catch (error) {
       console.log(error.message)
@@ -54,9 +51,7 @@ const createCategory = async(req, res)=>{
   // Delete a category
   const unListCategory = async(req, res)=>{
     try {
-      const categoryId  = req.query.id;
-      await Category.findByIdAndUpdate(categoryId,{isListed:false});
-      await Product.updateMany({ category: categoryId }, { isListed: false })
+      await categoryHelper.unListCategory(req.query.id)
       res.redirect('/admin/category')
     } catch (error) {
       res.status(500).json({ error: 'Failed to delete category' });
@@ -64,9 +59,7 @@ const createCategory = async(req, res)=>{
   }
   const reListCategory = async(req, res)=>{
     try {
-      const categoryId  = req.query.id;
-      await Category.findByIdAndUpdate(categoryId,{isListed:true});
-      await Product.updateMany({ category: categoryId }, { isListed: true })
+      await categoryHelper.reListCategory(req.query.id)
       res.redirect('/admin/category')
     } catch (error) {
       res.status(500).json({ error: 'Failed to delete category' });

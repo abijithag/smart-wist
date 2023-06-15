@@ -74,7 +74,7 @@ const loadProducts = async(req,res)=>{
   const unListProduct = async(req,res)=>{
     try {
         const id = req.query.id;
-        await Product.updateOne({_id:id},{ isListed: false })
+        await Product.updateOne({_id:id},{ isProductListed: false })
         res.redirect('/admin/displayProduct')
         
     } catch (error) {
@@ -85,7 +85,14 @@ const loadProducts = async(req,res)=>{
   const reListProduct = async(req,res)=>{
     try {
         const id = req.query.id;
-        await Product.updateOne({_id:id},{ isListed: true })
+        const categorylisted = await Product.findOne({_id:id}).populate('category')
+        console.log(categorylisted.category.isListed)
+        if(categorylisted.category.isListed==true){
+          await Product.updateOne({_id:id},{ isProductListed: true })
+        }else{
+          console.log('Cannot Relist v')
+        }
+        
         res.redirect('/admin/displayProduct')
         
     } catch (error) {

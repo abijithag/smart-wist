@@ -2,6 +2,8 @@ const express = require('express')
 const userRoute = express()
 const userController = require('../controllers/userController')
 const validate = require('../middleware/authMiddleware');
+const block = require('../middleware/blockMiddleware');
+
 const cookieparser = require('cookie-parser')
 const nocache = require('nocache')
 userRoute.use(nocache())
@@ -25,6 +27,7 @@ userRoute.use(cookieparser())
 
 //home page
 userRoute.get('*',validate.checkUser)
+userRoute.get('*',block.checkBlocked)
 userRoute.get('/',userController.homeLoad)
 
 //register
