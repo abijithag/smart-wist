@@ -2,10 +2,9 @@
 <html lang="en">
 
 
-<!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-form-product-2.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:32 GMT -->
 <head>
     <meta charset="utf-8">
-    <title>Evara Dashboard</title>
+    <title>Smart Wrist</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -146,7 +145,7 @@
                                         
                                         <select class="form-select" name="category">
                                             <% category.forEach(function(category) { %>
-                                            <option value="<%= category._id %>" nam><%= category.name %></option>
+                                            <option value="<%= category._id %>"><%= category.name %></option>
                                             <% }); %>
                                         </select>
                                     </div>
@@ -172,13 +171,19 @@
                                 </div> -->
                                 <div class="col-md-9">
                                     <div class="mb-4">
-                                        <label class="form-label">Images</label>
+                                        <label class="form-label">Main Image</label>
                                         <input class="form-control" type="file" name="images">
                                     </div>
                                 </div>
                                 <div class="col-md-9">
                                     <div class="mb-4">
-                                        <label class="form-label">Images</label>
+                                        <label class="form-label">Second Image</label>
+                                        <input class="form-control" type="file" name="images">
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="mb-4">
+                                        <label class="form-label">Third Image</label>
                                         <input class="form-control" type="file" name="images">
                                     </div>
                                 </div> <!-- col.// -->
@@ -189,21 +194,9 @@
             </div>
             </div>
         </form>
+        <p><%=(typeof message!=='undefined')?message:""%></p>
         </section> <!-- content-main end// -->
-        <footer class="main-footer font-xs">
-            <div class="row pb-30 pt-15">
-                <div class="col-sm-6">
-                    <script>
-                    document.write(new Date().getFullYear())
-                    </script> ©, Evara - HTML Ecommerce Template .
-                </div>
-                <div class="col-sm-6">
-                    <div class="text-sm-end">
-                        All rights reserved
-                    </div>
-                </div>
-            </div>
-        </footer>
+
     </main>
     <script src="../admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="../admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
@@ -215,5 +208,4 @@
 </body>
 
 
-<!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-form-product-2.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:32 GMT -->
 </html>

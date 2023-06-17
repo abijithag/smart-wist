@@ -27,7 +27,7 @@ userRoute.use(cookieparser())
 
 //home page
 userRoute.get('*',validate.checkUser)
-userRoute.get('*',block.checkBlocked)
+
 userRoute.get('/',userController.homeLoad)
 
 //register
@@ -57,7 +57,7 @@ userRoute.post('/setNewPassword',userController.setNewPassword)
 
 //profile
 
-userRoute.get('/profile',validate.requireAuth,userController.profile)
+userRoute.get('/profile',block.checkBlocked,validate.requireAuth,userController.profile)
 
 userRoute.get('/shop',userController.displayProduct)
 

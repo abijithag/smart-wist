@@ -18,7 +18,54 @@
     <!-- Template CSS -->
     <link href="../admin-assets/css/main.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
 </head>
+
+
+<style>
+    .tooltip-ellipsis {
+  max-width: 200px; /* Adjust the maximum width as needed */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  position: relative;
+  cursor: help;
+}
+
+.tooltip-ellipsis::after {
+  content: attr(title);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background-color: #000;
+  color: #fff;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s;
+}
+
+.tooltip-ellipsis:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 <body>
     <div class="screen-overlay"></div>
@@ -40,7 +87,7 @@
                     </a>
                     <div class="submenu">
                         <a href="/admin/displayProduct">Product List</a>
-                        <a href="/admin/category">Categories</a>
+                        <a href="/admin/category"> Categories</a>
                     </div>
                 </li>
              
@@ -116,88 +163,120 @@
             <div class="content-header">
                 <div>
                     <h2 class="content-title card-title">Products List</h2>
-                    <p>Lorem ipsum dolor sit amet.</p>
+                
                 </div>
                 <div>
             
                     <a href="/admin/product" class="btn btn-primary btn-sm rounded">Create new</a>
                 </div>
             </div>
-            <div class="card mb-4">
-              <!-- card-header end// -->
+        
 
-                <div class="card-body">
-                    <article class="itemlist">
-                        <div class="row align-items-center">
-                            <div class="col col-check flex-grow-0">
-                          
-                            </div>
-                            <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                                <a class="itemside" href="#">
-                                    <div class="left">
-                                        <div class="col-lg-2 col-sm-2 col-4 col-price"> <span></span> </div>
-                                    </div>
-                                    <div class="info">
-                                        <h6 class="mb-0">Name</h6>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>Price</span> </div>
-                            <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>Status</span> </div>
-                            <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>Action</span> </div>
-                            
-                        </div> <!-- row .// -->
+
+
+
+
+
+
+
+
+
+
+
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th class="text-end"> Action </th>
+                            </tr>
+                        </thead>
                         <% product.forEach((item) => { %>
-                    </article> <!-- itemlist  .// -->
-                    <article class="itemlist">
-                        <div class="row align-items-center">
-                            <div class="col col-check flex-grow-0">
-                    
-                            </div>
-                            <div class="col-lg-4 col-sm-4 col-8 flex-grow-1 col-name">
-                                <a class="itemside" href="#">
-                                    <div class="left">
-                                        <img src="../product-images/<%= item.images[0]%>" class="img-sm img-thumbnail" alt="Item">
-                                    </div>
-                                    <div class="info">
+                        <tbody>
+                            <tr>
+                                <td width="30%">
+                                    <a href="#" class="itemside">
+                                        <div class="info pl-3">
+                                            <h6 class="mb-0 title"><img src="../product-images/<%= item.images[0]%>" width="50px" height="50px" class="img-sm img-thumbnail" alt="Item"></h6>
+                          
+                                        </div>
                                         <h6 class="mb-0"><%= item.name %></h6>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-2 col-sm-2 col-4 col-price"> <span><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M308 96c6.627 0 12-5.373 12-12V44c0-6.627-5.373-12-12-12H12C5.373 32 0 37.373 0 44v44.748c0 6.627 5.373 12 12 12h85.28c27.308 0 48.261 9.958 60.97 27.252H12c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h158.757c-6.217 36.086-32.961 58.632-74.757 58.632H12c-6.627 0-12 5.373-12 12v53.012c0 3.349 1.4 6.546 3.861 8.818l165.052 152.356a12.001 12.001 0 0 0 8.139 3.182h82.562c10.924 0 16.166-13.408 8.139-20.818L116.871 319.906c76.499-2.34 131.144-53.395 138.318-127.906H308c6.627 0 12-5.373 12-12v-40c0-6.627-5.373-12-12-12h-58.69c-3.486-11.541-8.28-22.246-14.252-32H308z"/>
-                            </svg><%= item.price %></span> </div>
-                            <%if(item.isProductListed==true && item.isListed == true){%>
-                            <div class="col-lg-2 col-sm-2 col-4 col-status">
-                                <span class="badge rounded-pill alert-success">Active</span>
-                            </div>
-                            <%}else{%>
-                                <div class="col-lg-2 col-sm-2 col-4 col-status">
-                                    <span class="badge rounded-pill alert-warning">Unlisted</span>
-                                </div>
-                                <%}%>
-                                <div class="dropdown col-lg-2 col-sm-2 col-4 col-action text-start">
+
+                                    </a>
+                                </td>
+                                <td width="20%"><%= item.price %></td>
+                                <td class="tooltip-ellipsis"><%= item.description %></span></td>
+                                <%if(item.isProductListed==true && item.isListed == true){%>
+                                  <td><span class="badge rounded-pill alert-success">Active</span></td>
+                                <% } else { %> 
+                                  <td><span class="badge rounded-pill alert-warning">Unlisted</span></td>
+                                <% } %>
+                                <td>
+                                  <div class="dropdown col-lg-2 col-sm-2 col-4 col-action text-start">
                                     <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="">Edit info</a>
+                                    <div class="dropdown-menu text-end">
+                                        <a class="dropdown-item" href="/admin/updateProduct?id=<%= item._id %>">Edit</a>
                                         <%if(item.isProductListed==true && item.isListed == true){%>
-                                        <a class="dropdown-item text-danger" href="/admin/unListProduct?id=<%= item._id %>">Un List</a>
-                                        <%}else{%>
+                                            <a class="dropdown-item text-danger" href="/admin/unListProduct?id=<%= item._id %>">Un List</a>
+                                          <% } else { %>
                                             <a class="dropdown-item" href="/admin/reListProduct?id=<%= item._id %>">Re List</a>
-                                            <%}%>   
+                                            <% } %>
+
                                     </div>
                                 </div>
-                        </div> <!-- row .// -->
-                        <% }) %>
-                    </article> <!-- itemlist  .// -->
+                                  </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table> <!-- table-responsive.// -->
+                </div>
+            </div> <!-- card-body end// -->
+        </div> <!-- card en
 
-             
-              
-       
             
-  
 
-                </div> <!-- card-body end// -->
-            </div> <!-- card end// -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             <div class="pagination-area mt-30 mb-50">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-start">

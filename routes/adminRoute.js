@@ -3,6 +3,7 @@ const adminRoute = express()
 const adminController = require('../controllers/adminController')
 const categoryController = require('../controllers/categoryController')
 const productController = require('../controllers/productController')
+const multer = require("../multer/multer");
 
 const validate = require('../middleware/adminAuth');
 const session = require('express-session');
@@ -34,6 +35,8 @@ adminRoute.get('/dashboard',validate.requireAuth,adminController.loadDashboard)
 
 
 adminRoute.get('/category',validate.requireAuth,categoryController.loadCategory)
+adminRoute.get('/addCategory',validate.requireAuth,categoryController.loadAddCategory)
+
 adminRoute.post('/addCategory',validate.requireAuth,categoryController.createCategory)
 adminRoute.get('/unListCategory',validate.requireAuth,categoryController.unListCategory)
 adminRoute.get('/reListCategory',validate.requireAuth,categoryController.reListCategory)
@@ -51,10 +54,14 @@ adminRoute.get('/editUser',validate.requireAuth,adminController.loadEditUser)
 adminRoute.post('/editUser',adminController.updateUser)
 
 adminRoute.get('/product',validate.requireAuth,productController.loadProducts)
-adminRoute.post('/addProduct',productController.createProduct)
+adminRoute.post('/addProduct',multer.upload,productController.createProduct)
 adminRoute.get('/displayProduct',validate.requireAuth,productController.displayProduct)
 adminRoute.get('/unListProduct',productController.unListProduct)
 adminRoute.get('/reListProduct',productController.reListProduct)
+
+
+adminRoute.get('/updateProduct',productController.loadUpdateProduct)
+adminRoute.post('/updateProduct',multer.upload,productController.updateProduct)
 
 
 adminRoute.get('/logout',adminController.logout)

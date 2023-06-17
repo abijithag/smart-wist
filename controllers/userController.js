@@ -2,16 +2,18 @@ const User = require('../models/userModel')
 const Product = require('../models/productModel')
 const jwt = require('jsonwebtoken');
 const otpGenerator = require('otp-generator')
+require('dotenv').config(); // Module to Load environment variables from .env file
+const userHelper = require('../helpers/userHelper')
+const otpHelper = require('../helpers/otpHelper')
 
 const accountSid = 'ACed4175b83602429cfcf29f2f468ac634';
-const authToken = '925574a176805ef8a83915ecc15cada4';
+const authToken = '184f4f47cc996e47e1d356723cf92bf0';
 const client = require('twilio')(accountSid, authToken);
-
 
 
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
-  return jwt.sign({ id }, 'my-secret', {
+  return jwt.sign({ id }, process.env.JWT_SECRET_KEY, {
     expiresIn: maxAge
   });
 };
@@ -54,19 +56,18 @@ const insertUser = async(req,res)=>{
     if (/\d/.test(req.body.fname) || /\d/.test(req.body.lname)) {
         return res.render("register", { message: "Name should not contain numbers" });
       }
-  
-    let mobileNumber = req.body.mno
-    const otp = otpGenerator.generate(6, {
-        upperCase: false,
-        specialChars: false,
-        upperCaseAlphabets: false,
-        lowerCaseAlphabets: false
-      });
-    //   await client.messages.create({
-    //     body: `Your OTP for Smart Wrist Sign Up is: ${otp}`,
-    //     from: '+18312822941',
-    //     to: `+91${mobileNumber}`,
-    //   })
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    if(!passwordRegex.test(req.body.password)){
+        return res.render("register", { message: "Password Should Contain atleast 8 characters,one number and a special character" });
+    }
+    if (!req.body.fname || req.body.fname.trim().length === 0) {
+        return res.render("register", { message: "Name is required" });
+    }
+ 
+    const mobileNumber = req.body.mno
+    console.log('reg',mobileNumber)
+    const otp = otpHelper.generateOtp()
+    await otpHelper.sendOtp(mobileNumber,otp)
       console.log(`Otp is ${otp}`)
     try {
         req.session.otp = otp;
@@ -74,7 +75,7 @@ const insertUser = async(req,res)=>{
         req.session.mobile = mobileNumber 
         res.render('verifyOtp')     
     } catch (error) {
-        console.log(error.message);
+        console.log(error.message); 
     }
 }
 const loginLoad = async(req,res)=>{
@@ -85,42 +86,23 @@ const loginLoad = async(req,res)=>{
     }
 }
 
-const verifyLogin = async(req,res)=>{
-    try {
-        const email = req.body.email
-        const password = req.body.password
-        
-        const userData =await User.findOne({email:email})
-
-        if(userData){
-            const passwordMatch = await bcrypt.compare(password,userData.password)
-            console.log(passwordMatch)
-            if(passwordMatch){
-                if(userData.is_blocked==true){
-                    res.render('login',{message:"Your Account is Blocked"});
-                }else{
-                    const token = createToken(userData._id);
-                    res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-                    res.redirect('/')
-                }
-                
-            }else{
-                res.render('login',{message:"Email and Password are Incorrect"});
-            }
-            
-        }else{
-            res.render('login',{message:"Email and Password are Incorrect"});
-        }
-        
-    } catch (error) {
-        console.log(error.message);
+const verifyLogin = async (req, res) => {
+    const data = req.body; // Assuming the request body contains the login data
+  
+    const result = await userHelper.verifyLogin(data);
+    if (result.error) {
+      res.render('login', { message: result.error });
+    } else {
+      const token = result.token;
+      res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+      res.redirect('/');
     }
-}
+  };
 
 
 
 const resendOTP = async (req, res) => {
-    let mobileNumber = req.session.mobile
+    const mobileNumber = req.session.mobile
     try {
       // Retrieve user data from session storage
       const userData = req.session.userData;
@@ -130,20 +112,11 @@ const resendOTP = async (req, res) => {
       }
   
       // Generate and send new OTP using Twilio
-      const otp = otpGenerator.generate(6, {
-        upperCase: false,
-        specialChars: false,
-        upperCaseAlphabets: false,
-        lowerCaseAlphabets: false
-      });
+      const otp = otpHelper.generateOtp()
 
       req.session.otp = otp
 
-    //   await client.messages.create({
-    //     body: `Your OTP for Smart Wrist Sign Up is: ${otp}`,
-    //     from: '+18312822941',
-    //     to:`+91${mobileNumber}`,
-    //   })
+      await otpHelper.sendOtp(mobileNumber,otp)
       console.log(`Resend Otp is ${otp}`)
   
       res.render('verifyOtp',{ message: 'OTP resent successfully' });
@@ -205,22 +178,14 @@ const forgotPasswordOtp = async(req, res)=>{
     if(!user){
         res.render('forgotPassword',{message:"User Not Registered"})
     }else{
-        const OTP = otpGenerator.generate(6,{
-            lowerCaseAlphabets: false, 
-            upperCaseAlphabets: false, 
-            specialChars: false
-        })
-        // await client.messages.create({
-        //     body: `Your OTP for Smart Wrist Sign Up is: ${OTP}`,
-        //     from: '+18312822941',
-        //     to:`+91${user.mobile}`,
-        //   })
+        const OTP = otpHelper.generateOtp()
+        await otpHelper.sendOtp(user.mobile,OTP)
         console.log(`Forgot Password otp is --- ${OTP}`) 
         req.session.otp = OTP
         req.session.email = user.email
         res.render('forgotPasswordOtp')
     }
-    
+     
 }
 
 const loadForgotPassword = async(req,res)=>{

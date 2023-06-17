@@ -13,10 +13,24 @@ const loadCategory = async(req,res)=>{
         console.log(error)
     }
 }
+const loadAddCategory = async(req,res)=>{
+  try { 
+    res.render('addCategory')
+  } catch (error) {
+      console.log(error)
+  }
+}
 
 const createCategory = async(req, res)=>{
     try {
-      await categoryHelper.createCategory(req.body)
+      const existingCategory = await Category.findOne({name:req.body.name})
+      if(existingCategory){
+        return res.render("addCategory",{message:"Category already exists"})
+      } 
+      if (!req.body.name || req.body.name.trim().length === 0) {
+        return res.render("addCategory", { message: "Name is required" });
+    }
+       await categoryHelper.createCategory(req.body)
       res.redirect('/admin/category')
     } catch (error) {
       console.log(error.message)
@@ -40,7 +54,7 @@ const createCategory = async(req, res)=>{
   
     try {
       const categoryId  = req.body.id
-      await categoryHelper.updateCategory(categoryId)
+      await categoryHelper.updateCategory(categoryId,req.body)
       res.redirect('/admin/category')
     } catch (error) {
       console.log(error.message)
@@ -73,5 +87,6 @@ const createCategory = async(req, res)=>{
     updateCategory,
     unListCategory,
     loadUpdateCategory,
-    reListCategory
+    reListCategory,
+    loadAddCategory
   }
