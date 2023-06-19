@@ -3,6 +3,7 @@ const userRoute = express()
 const userController = require('../controllers/userController')
 const validate = require('../middleware/authMiddleware');
 const block = require('../middleware/blockMiddleware');
+const productController = require('../controllers/productController')
 
 const cookieparser = require('cookie-parser')
 const nocache = require('nocache')
@@ -37,7 +38,7 @@ userRoute.post('/verifyOtp',userController.verifyOtp)
 
 //Login
 userRoute.get('/login',userController.loginLoad)
-userRoute.post('/login',userController.verifyLogin)
+userRoute.post('/login',userController.verifyLogin) 
 userRoute.get('/logout',userController.logout)
 
 
@@ -60,6 +61,6 @@ userRoute.post('/setNewPassword',userController.setNewPassword)
 userRoute.get('/profile',block.checkBlocked,validate.requireAuth,userController.profile)
 
 userRoute.get('/shop',userController.displayProduct)
-
+userRoute.get('/productPage',productController.productPage)
 
 module.exports = userRoute

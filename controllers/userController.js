@@ -1,14 +1,9 @@
 const User = require('../models/userModel')
 const Product = require('../models/productModel')
 const jwt = require('jsonwebtoken');
-const otpGenerator = require('otp-generator')
 require('dotenv').config(); // Module to Load environment variables from .env file
 const userHelper = require('../helpers/userHelper')
 const otpHelper = require('../helpers/otpHelper')
-
-const accountSid = 'ACed4175b83602429cfcf29f2f468ac634';
-const authToken = '184f4f47cc996e47e1d356723cf92bf0';
-const client = require('twilio')(accountSid, authToken);
 
 
 const maxAge = 3 * 24 * 60 * 60;
@@ -65,9 +60,9 @@ const insertUser = async(req,res)=>{
     }
  
     const mobileNumber = req.body.mno
-    console.log('reg',mobileNumber)
+
     const otp = otpHelper.generateOtp()
-    await otpHelper.sendOtp(mobileNumber,otp)
+    // await otpHelper.sendOtp(mobileNumber,otp)
       console.log(`Otp is ${otp}`)
     try {
         req.session.otp = otp;
@@ -116,7 +111,7 @@ const resendOTP = async (req, res) => {
 
       req.session.otp = otp
 
-      await otpHelper.sendOtp(mobileNumber,otp)
+    //   await otpHelper.sendOtp(mobileNumber,otp)
       console.log(`Resend Otp is ${otp}`)
   
       res.render('verifyOtp',{ message: 'OTP resent successfully' });
@@ -179,7 +174,7 @@ const forgotPasswordOtp = async(req, res)=>{
         res.render('forgotPassword',{message:"User Not Registered"})
     }else{
         const OTP = otpHelper.generateOtp()
-        await otpHelper.sendOtp(user.mobile,OTP)
+        // await otpHelper.sendOtp(user.mobile,OTP)
         console.log(`Forgot Password otp is --- ${OTP}`) 
         req.session.otp = OTP
         req.session.email = user.email
@@ -191,7 +186,7 @@ const forgotPasswordOtp = async(req, res)=>{
 const loadForgotPassword = async(req,res)=>{
     try {
         res.render('forgotPassword')
-    } catch (error) {
+    } catch (error) { 
         console.log(error.message)
     }
 }
@@ -200,19 +195,15 @@ const resetPasswordOtpVerify = async (req,res)  => {
     try{
         const mobile = req.session.mobile
         const otp = req.session.otp
-        console.log('session otp',otp);
         // res.send('welcome',)
         const reqOtp = req.body.otp
 
         const otpHolder = await User.find({ mobile : req.body.mobile })
         if(otp==reqOtp){
-            //sending token as a cookie
-            const token = createToken(User._id)
-            res.cookie('jwt',token, {httpOnly: true, maxAge : maxAge*1000 })
             res.render('resetPassword')
         }
         else{
-            return console.log("Your OTP was Wrong")
+            res.render('forgotPasswordOtp',{message:"Your OTP was Wrong"})
         }
     }catch(error){
         console.log(error);
@@ -226,15 +217,18 @@ const setNewPassword = async (req ,res) => {
 
     const mobile = req.session.mobile
     const email = req.session.email
-    
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    if(!passwordRegex.test(req.body.newpassword)){
+        return res.render("resetPassword", { message: "Password Should Contain atleast 8 characters,one number and a special character" });
+    }
 
     if(newpw === confpw){
+
         const spassword =await securePassword(newpw)
         const newUser = await User.updateOne({ email:email }, { $set: { password: spassword } });
-        console.log(newUser)
 
         res.redirect('/login')
-        console.log('Password updated successfully');
     }else{
         res.render('resetPassword',{message:'Password and Confirm Password is not matching'})
     }
@@ -247,8 +241,8 @@ const logout = (req,res) =>{
 
 const displayProduct = async(req,res)=>{
     try {
-      const product = await Product.find({isListed:true})
-      res.render('shop',{product:product})    
+        const product = await Product.find({ $and: [{ isListed: true }, { isProductListed: true }] }).populate('category');
+        res.render('shop',{product:product})    
     } catch (error) {
       console.log(error.message)
     }

@@ -1,6 +1,6 @@
-const Admin = require('../models/adminModel')
-const User = require('../models/userModel')
-const Product = require('../models/productModel')
+// const Admin = require('../models/adminModel')
+// const User = require('../models/userModel')
+// const Product = require('../models/productModel')
 const Category = require('../models/categoryModel')
 const categoryHelper = require('../helpers/categoryHelper')
 

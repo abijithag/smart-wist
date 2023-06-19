@@ -1,9 +1,9 @@
-const Admin = require('../models/adminModel')
-const User = require('../models/userModel')
-const path = require('path');
+// const Admin = require('../models/adminModel')
+// const User = require('../models/userModel')
+// const path = require('path');
 const Product = require('../models/productModel')
 const Category = require('../models/categoryModel')
-const multer = require('multer');
+// const multer = require('multer');
 const productHelper = require('../helpers/productHelper')
 
 
@@ -11,7 +11,7 @@ const productHelper = require('../helpers/productHelper')
 
 const loadProducts = async(req,res)=>{
     try {
-      let categories = await Category.find({})
+      const categories = await Category.find({})
       res.render('addProduct',{category:categories})
     } catch (error) {
       
@@ -21,7 +21,7 @@ const loadProducts = async(req,res)=>{
   
   const createProduct = async(req, res) => {
     try {
-      let categories = await Category.find({})
+      const categories = await Category.find({})
       if (!req.body.name || req.body.name.trim().length === 0) {
         return res.render("addProduct", { message: "Name is required",category:categories });
     }
@@ -38,7 +38,7 @@ const loadProducts = async(req,res)=>{
 
   const displayProduct = async(req,res)=>{
     try {
-      console.log('displayproduct')
+
       const product = await Product.find({})
       res.render('displayProduct',{product:product})    
     } catch (error) {
@@ -73,7 +73,7 @@ const loadProducts = async(req,res)=>{
   
   const loadUpdateProduct = async(req,res)=>{
     try {
-      let categories = await Category.find({})
+      const categories = await Category.find({})
       const id = req.query.id;
       const productData = await Product.findById({_id:id})
       res.render('updateProduct',{product:productData,category:categories})
@@ -92,7 +92,20 @@ const loadProducts = async(req,res)=>{
     } catch (error) {
       console.log(error.message);
     }
-  }; 
+  };
+  
+  const productPage = async ( req, res ) => {
+    try{
+        const id = req.query.id
+        const product = await Product.findOne({ _id : id }).populate('category')
+        res.render('product',{product : product})
+    }
+    catch(error){
+        console.log(error);
+        res.send({ success: false, error: error.message });
+ }
+
+}
 
   module.exports = {
     loadProducts,
@@ -101,5 +114,6 @@ const loadProducts = async(req,res)=>{
     unListProduct,
     reListProduct,
     loadUpdateProduct,
-    updateProduct
+    updateProduct,
+    productPage
   }

@@ -5,7 +5,7 @@
 <!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-products-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:00 GMT -->
 <head>
     <meta charset="utf-8">
-    <title>Evara Dashboard</title>
+    <title>Smart Wrist</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -204,12 +204,13 @@
                                             <h6 class="mb-0 title"><img src="../product-images/<%= item.images[0]%>" width="50px" height="50px" class="img-sm img-thumbnail" alt="Item"></h6>
                           
                                         </div>
-                                        <h6 class="mb-0"><%= item.name %></h6>
+                                        <h6 class="mb-0 tooltip-ellipsis" title="<%= item.name %>"><%= item.name %></h6>
 
                                     </a>
                                 </td>
-                                <td width="20%"><%= item.price %></td>
-                                <td class="tooltip-ellipsis"><%= item.description %></span></td>
+                                <td width="20%"><i class="fa fa-inr" aria-hidden="true"></i>
+                                    <%= item.price %></td>
+                                <td title="<%= item.description %>" class="tooltip-ellipsis"><%= item.description %></td>
                                 <%if(item.isProductListed==true && item.isListed == true){%>
                                   <td><span class="badge rounded-pill alert-success">Active</span></td>
                                 <% } else { %> 

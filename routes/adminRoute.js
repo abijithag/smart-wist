@@ -60,7 +60,7 @@ adminRoute.get('/unListProduct',productController.unListProduct)
 adminRoute.get('/reListProduct',productController.reListProduct)
 
 
-adminRoute.get('/updateProduct',productController.loadUpdateProduct)
+adminRoute.get('/updateProduct',validate.requireAuth,productController.loadUpdateProduct)
 adminRoute.post('/updateProduct',multer.upload,productController.updateProduct)
 
 

@@ -28,7 +28,7 @@ const checkUser = (req, res, next) => {
         res.locals.admin = null;
         next();
       } else {
-        let admin = await Admin.findById(decodedToken.id);
+        const admin = await Admin.findById(decodedToken.id);
         res.locals.admin = admin;
         next();
       }

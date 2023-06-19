@@ -193,15 +193,25 @@
             <div class="pagination-area mt-15 mb-50">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-start">
-                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                        <li class="page-item"><a class="page-link" href="#">02</a></li>
-                        <li class="page-item"><a class="page-link" href="#">03</a></li>
-                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                        <li class="page-item"><a class="page-link" href="#">16</a></li>
-                        <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+                        <% if (page > 1) { %>
+                        <li class="page-item active"><a class="page-link" href="/admin/users?page=<%= page - 1 %>&pageSize=<%= pageSize %>" >Pre</a></li>
+                        <% } %>
+                        <!-- <li class="page-item">Page <%= page %> of <%= totalPages %></li> -->
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <% if (i === page) { %>
+                                <li class="page-item active" ><span><%= i %> </span></li>
+                            <% } else { %>
+                              <li class="page-item active" ><a class="page-link" href="/admin/users?page=<%= i %>&pageSize=<%= pageSize %>"><%= i %></a></li>
+                            <% } %>
+                          <% } %>
+                        <% if (page < totalPages) { %>
+                        <li class="page-item active"><a class="page-link" href="/admin/users?page=<%= page + 1 %>&pageSize=<%= pageSize %>" style="width: 45px;">Next</i>
+                        </a></li>
+                        <% } %>
                     </ul>
                 </nav>
             </div>
+         
         </section> <!-- content-main end// -->
         <footer class="main-footer font-xs">
             <div class="row pb-30 pt-15">

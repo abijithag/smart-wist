@@ -1,13 +1,8 @@
 const User = require('../models/userModel')
 const Product = require('../models/productModel')
 const jwt = require('jsonwebtoken');
-const otpGenerator = require('otp-generator');
-require('dotenv').config(); // Module to Load environment variables from .env file
-
-const accountSid = 'ACed4175b83602429cfcf29f2f468ac634';
-const authToken = '925574a176805ef8a83915ecc15cada4';
-const client = require('twilio')(accountSid, authToken);
-
+// const otpGenerator = require('otp-generator');
+require('dotenv').config();
 
 
 const maxAge = 3 * 24 * 60 * 60;
@@ -16,6 +11,10 @@ const createToken = (id) => {
     expiresIn: maxAge
   });
 };
+
+
+
+
 
 // authHelper.js
 

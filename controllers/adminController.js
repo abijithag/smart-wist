@@ -1,10 +1,10 @@
 const Admin = require('../models/adminModel')
 const User = require('../models/userModel')
-const path = require('path');
-const Product = require('../models/productModel')
-const Category = require('../models/categoryModel')
+// const path = require('path');
+// const Product = require('../models/productModel')
+// const Category = require('../models/categoryModel')
 const jwt = require('jsonwebtoken');
-const multer = require('multer');
+// const multer = require('multer');
 
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
@@ -28,8 +28,6 @@ const verifyLogin = async(req,res)=>{
         const password = req.body.password
         
         const adminData =await Admin.findOne({userName:username})
-        console.log(adminData.password)
-        console.log(password)
 
 
         if(adminData.password === password){
@@ -67,6 +65,15 @@ const loadDashboard = async(req,res)=>{
 
 const loadUsers = async(req,res)=>{
   try {
+const page = parseInt(req.query.page) || 1; // Current page number
+const pageSize = parseInt(req.query.pageSize) || 5; // Number of items per page
+const skip = (page - 1) * pageSize;
+const totalCount = await User.countDocuments({});
+const totalPages = Math.ceil(totalCount / pageSize);
+
+
+
+
     var search = ''
     if(req.query.search){
         search = req.query.search
@@ -78,9 +85,12 @@ const loadUsers = async(req,res)=>{
             {email:{$regex:'.*'+search+'.*'}},
             {mobile:{$regex:'.*'+search+'.*'}},
         ]
-    })
+    }).skip(skip)
+    .limit(pageSize)
    
-    res.render('users',{user:usersData})
+    res.render('users',{user:usersData,page,
+        pageSize,
+        totalPages})
 } catch (error) {
     console.log(error.message);
 }
@@ -139,14 +149,14 @@ const unBlockUser = async(req,res)=>{
     await User.findByIdAndUpdate({_id:id},{$set:{is_blocked:false}})
     res.redirect('/admin/users')
   } catch (error) {
-    console.log(error)
+    console.log(error.message)
   }
 }
 
 
 
 const logout = (req,res) =>{
-  res.cookie('jwt', '' ,{maxAge : 1})
+  res.cookie('jwtAdmin', '' ,{maxAge : 1})
   res.redirect('/admin')
 }
 
