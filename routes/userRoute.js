@@ -4,7 +4,10 @@ const userController = require('../controllers/userController')
 const validate = require('../middleware/authMiddleware');
 const block = require('../middleware/blockMiddleware');
 const productController = require('../controllers/productController')
+const profileController = require('../controllers/profileController')
+const orderController = require('../controllers/orderController')
 
+const cartController = require('../controllers/cartController')
 const cookieparser = require('cookie-parser')
 const nocache = require('nocache')
 userRoute.use(nocache())
@@ -27,7 +30,7 @@ userRoute.use(express.urlencoded({extended:true}))
 userRoute.use(cookieparser())
 
 //home page
-userRoute.get('*',validate.checkUser)
+userRoute.all('*',validate.checkUser)
 
 userRoute.get('/',userController.homeLoad)
 
@@ -56,11 +59,33 @@ userRoute.post('/forgotPasswordOtp',userController.forgotPasswordOtp)
 userRoute.post('/setNewPassword',userController.setNewPassword)
 
 
-//profile
 
-userRoute.get('/profile',block.checkBlocked,validate.requireAuth,userController.profile)
 
 userRoute.get('/shop',userController.displayProduct)
 userRoute.get('/productPage',productController.productPage)
+
+
+//cart
+userRoute.get('/cart',validate.requireAuth,cartController.loadCart)
+userRoute.post('/addToCart/:id',cartController.addToCart)
+
+userRoute.put('/change-product-quantity',cartController.updateQuantity)
+userRoute.delete(
+  "/delete-product-cart",
+  cartController.deleteProduct
+);
+
+
+//profile
+
+userRoute.get('/profile',block.checkBlocked,validate.requireAuth,profileController.profile)
+userRoute.post('/submitAddress',profileController.submitAddress)
+userRoute.post('/updateAddress',profileController.editAddress)
+
+//checkout
+userRoute.get('/checkOut',orderController.checkOut)
+
+
+
 
 module.exports = userRoute

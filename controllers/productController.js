@@ -25,6 +25,10 @@ const loadProducts = async(req,res)=>{
       if (!req.body.name || req.body.name.trim().length === 0) {
         return res.render("addProduct", { message: "Name is required",category:categories });
     }
+    if(req.body.price<=0){
+      return res.render("addProduct", { message: "Product Price Should be greater than 0",category:categories });
+    }
+
       const images = req.files.map(file => file.filename);
       await productHelper.createProduct(req.body,images)
       res.redirect('/admin/displayProduct');
@@ -86,6 +90,7 @@ const loadProducts = async(req,res)=>{
  
   const updateProduct = async (req, res) => {
     try {
+      const categories = await Category.find({})
         const images = req.files.map(file => file.filename);
         await productHelper.updateProduct(req.body,images)
         res.redirect('/admin/displayProduct');

@@ -1,0 +1,59 @@
+                                    <div class="product_count">
+                                        <input type="text" name="qty" id="sst" maxlength="12" value="<%=cart.quantity%>" title="Quantity:"
+                                            class="input-text qty">
+                                        <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
+                                            class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
+                                        <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) && sst > 0 ) result.value--;return false;"
+                                            class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
+                                    </div>
+                                    <div class="detail-qty border radius m-auto">
+                                        <button class="qty-btn" onclick="changeQuantity('<%= cart._id %>','<%=cart.carted.productId.%>','<%=user._id%>','<%=index%>',-1)"><i class="fi-rs-angle-small-down"></i></button>
+                                        <span id="qty-val-<%= cart.carted.productId %>" class="qty-val"><%= cart.carted.quantity %></span>
+                                        <button class="qty-btn" onclick="changeQuantity('<%= cart._id %>','<%=cart.carted.productId%>','<%=user._id%>','<%=index%>',1)"><i class="fi-rs-angle-small-up"></i></button>
+                                      </div>
+                                      <script>
+                                        function changeQuantity(proId, userId, quantity,count) {
+                                       
+                                    
+                                        $.ajax({
+                                          url: "/changeItemQuantity",
+                                          method: "post",
+                                          data: {
+                                            productId: proId,
+                                            userId: userId,
+                                            quantity: quantity,
+                                            count: count,
+                                          },
+                                          
+                                        success: (response) => {
+                                           if(response.deleteProduct){
+                                              location.reload(); // Reload the page
+                                           }else{
+                                                 console.log(response,'ajax response')
+                                            const quantityInput = document.getElementById(`quantityInput_${proId}`);
+                                            quantityInput.value = response.quantity;
+                                    
+                                            const total = document.getElementById('summary');
+                                            total.innerHTML = response.total;
+                                    
+                                            const subtotal = document.getElementById(`tsummary`);
+                                            subtotal.innerHTML = response.subtotal;
+                                    
+                                            // {{!-- const summarySubtotal = document.getElementById(`summary-subtotal`);
+                                            // summarySubtotal.textContent = response.subtotal --}}
+                                            
+                                           } 
+                                          }
+                                        })
+                                      }</script>
+
+                                    <td>
+                <div class="product_count">
+                    <input type="text" name="qty" id="quantityInput_{{this.carted._id}}" maxlength="12" value="{{this.quantity}}" title="Quantity:"
+                        class="input-text qty">
+                    <button onclick="changeQuantity('{{this.carted._id}}','{{this.user}}','{{this.quantity}}',1)"
+                        class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
+                    <button onclick="changeQuantity('{{this.carted._id}}','{{this.user}}','{{this.quantity}}',-1)"
+                        class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
+                </div>
+            </td>

@@ -53,7 +53,7 @@ adminRoute.get('/unBlockUser',validate.requireAuth,adminController.unBlockUser)
 adminRoute.get('/editUser',validate.requireAuth,adminController.loadEditUser)
 adminRoute.post('/editUser',adminController.updateUser)
 
-adminRoute.get('/product',validate.requireAuth,productController.loadProducts)
+adminRoute.get('/product',validate.requireAuth,productController.loadProducts) 
 adminRoute.post('/addProduct',multer.upload,productController.createProduct)
 adminRoute.get('/displayProduct',validate.requireAuth,productController.displayProduct)
 adminRoute.get('/unListProduct',productController.unListProduct)

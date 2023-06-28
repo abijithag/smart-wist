@@ -44,22 +44,34 @@ const loadRegister = async(req,res)=>{
 }
 const insertUser = async(req,res)=>{
     const email = req.body.email;
+    const mobileNumber = req.body.mno
     const existingUser = await User.findOne({email:email})
-    if(existingUser){
-      return res.render("register",{message:"Email already exists"})
+    if (!req.body.fname || req.body.fname.trim().length === 0) {
+        return res.render("register", { message: "Name is required" });
     }
     if (/\d/.test(req.body.fname) || /\d/.test(req.body.lname)) {
         return res.render("register", { message: "Name should not contain numbers" });
       }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)){
+        return res.render("register", { message: "Email Not Valid" });
+    }
+    if(existingUser){
+      return res.render("register",{message:"Email already exists"})
+    }
+    const mobileNumberRegex = /^\d{10}$/;
+    if (!mobileNumberRegex.test(mobileNumber)) {
+        return res.render("register", { message: "Mobile Number should have 10 digit" });
+
+    }
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
     if(!passwordRegex.test(req.body.password)){
         return res.render("register", { message: "Password Should Contain atleast 8 characters,one number and a special character" });
     }
-    if (!req.body.fname || req.body.fname.trim().length === 0) {
-        return res.render("register", { message: "Name is required" });
+
+    if(req.body.password!=req.body.confpassword){
+        return res.render("register", { message: "Password and Confirm Password must be same" });
     }
- 
-    const mobileNumber = req.body.mno
 
     const otp = otpHelper.generateOtp()
     // await otpHelper.sendOtp(mobileNumber,otp)
@@ -75,7 +87,12 @@ const insertUser = async(req,res)=>{
 }
 const loginLoad = async(req,res)=>{
     try {
-        res.render('login')
+        if(res.locals.user!=null){
+            res.redirect('/')
+        }else{
+            res.render('login')
+        }
+        
     } catch (error) {
         console.log(error.message);
     }
@@ -195,7 +212,6 @@ const resetPasswordOtpVerify = async (req,res)  => {
     try{
         const mobile = req.session.mobile
         const otp = req.session.otp
-        // res.send('welcome',)
         const reqOtp = req.body.otp
 
         const otpHolder = await User.find({ mobile : req.body.mobile })
@@ -248,7 +264,14 @@ const displayProduct = async(req,res)=>{
     }
   }
 
-
+const checkOut = (req,res)=>{
+    try {
+        res.render('checkOut')
+    } catch (error) {
+        console.log(error.message)
+        
+    }
+}
 
 module.exports = {
     homeLoad,
@@ -264,6 +287,7 @@ module.exports = {
     setNewPassword,
     profile,
     logout,
-    displayProduct
+    displayProduct,
+    checkOut
 
 }

@@ -51,7 +51,6 @@ const createCategory = async(req, res)=>{
   
   // Update a category
   async function updateCategory(req, res) {
-  
     try {
       const categoryId  = req.body.id
       await categoryHelper.updateCategory(categoryId,req.body)

@@ -146,7 +146,7 @@
                                         
                                         <select class="form-select" name="category">
                                             <% category.forEach(function(category) { %>
-                                            <option value="<%= category._id %>" nam><%= category.name %></option>
+                                            <option value="<%= category._id %>"><%= category.name %></option>
                                             <% }); %>
                                         </select>
                                     </div>
@@ -160,7 +160,7 @@
                                 <div class="col-md-9">
                                     <div class="mb-4">
                                         <label class="form-label">Cost in INR</label>
-                                        <input type="text" placeholder="00.0" class="form-control" name="price" value="<%=product.price%>">
+                                        <input type="number" placeholder="00.0" class="form-control" name="price" value="<%=product.price%>">
                                     </div>
                                 </div> <!-- col.// -->
                             </div> <!-- row.// -->
@@ -173,19 +173,19 @@
                                 <div class="col-md-9">
                                     <div class="mb-4">
                                         <label class="form-label">Main Image</label>
-                                        <input class="form-control" type="file" name="images">
+                                        <input class="form-control" type="file" value="<%=product.images[0]%>" name="images">
                                     </div>
                                 </div>
                                 <div class="col-md-9">
                                     <div class="mb-4">
                                         <label class="form-label">Second Image</label>
-                                        <input class="form-control" type="file" name="images">
+                                        <input class="form-control" type="file" value="<%=product.images[1]%>" name="images">
                                     </div>
                                 </div>
                                 <div class="col-md-9">
                                     <div class="mb-4">
                                         <label class="form-label">Third Image</label>
-                                        <input class="form-control" type="file" name="images">
+                                        <input class="form-control" type="file" name="images" value="<%=product.images[2]%>">
                                     </div>
                                 </div> <!-- col.// -->
                             </div> <!-- .row end// -->
