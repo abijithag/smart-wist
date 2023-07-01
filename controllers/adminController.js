@@ -5,6 +5,11 @@ const User = require('../models/userModel')
 // const Category = require('../models/categoryModel')
 const jwt = require('jsonwebtoken');
 // const multer = require('multer');
+const adminHelper = require('../helpers/adminHelper');
+const { response } = require('../routes/userRoute');
+const Order = require('../models/orderModel');
+const orderHelper = require('../helpers/orderHelper')
+
 
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
@@ -153,12 +158,45 @@ const unBlockUser = async(req,res)=>{
   }
 }
 
+const orderList = async(req,res)=>{
+    try {
+        const orders = await Order.aggregate([
+            { $unwind: "$orders" },
+            { $sort: { 'orders.createdAt' : -1 } },
+          ])
+        res.render('orderList',{orders})          
+      console.log(orders[0].orders.name);
+    } catch (error) {
+        console.log(error.message)
+        
+    }
+}
+
+
+
+const orderDetails = async (req,res)=>{
+    try {
+      const id = req.query.id
+      console.log(id);
+      adminHelper.findOrder(id).then((orders) => {
+        const address = orders[0].shippingAddress
+        const products = orders[0].productDetails 
+        res.render('orderDetails',{orders,address,products})
+      });
+        
+    } catch (error) {
+      console.log(error.message);
+    }
+  
+  }
 
 
 const logout = (req,res) =>{
   res.cookie('jwtAdmin', '' ,{maxAge : 1})
   res.redirect('/admin')
 }
+
+
 
 
 
@@ -173,5 +211,7 @@ module.exports = {
     loadEditUser,
     updateUser,
     unBlockUser,
-    logout
+    logout,
+    orderList,
+    orderDetails
 }

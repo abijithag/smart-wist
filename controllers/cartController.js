@@ -5,6 +5,7 @@ const Cart = require('../models/cartModel');
 
 const addToCart = (req,res)=>{
     try {
+      console.log(req.params.id)
         cartHelper.addCart(req.params.id,res.locals.user._id)
         .then((response)=>{
             res.send(response)
@@ -108,7 +109,6 @@ const loadCart = async (req, res) => {
 
 
 const updateQuantity = (req, res) => {
-  console.log("update")
 
   let userId = res.locals.user._id;
 

@@ -68,8 +68,11 @@ const insertUser = async(req,res)=>{
     if(!passwordRegex.test(req.body.password)){
         return res.render("register", { message: "Password Should Contain atleast 8 characters,one number and a special character" });
     }
+    console.log(req.body.password)
+    console.log(req.body.confpassword)
 
-    if(req.body.password!=req.body.confpassword){
+
+    if(req.body.password!=req.body.confPassword){
         return res.render("register", { message: "Password and Confirm Password must be same" });
     }
 

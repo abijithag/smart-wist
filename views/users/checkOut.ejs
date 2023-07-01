@@ -28,6 +28,118 @@
     <link rel="stylesheet" href="css/nouislider.min.css">
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/main.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.min.js"></script>
+
+    <style>
+        /* popup------------------------------------------------- */
+        .overlay-pop-up{
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: black;
+          opacity: 0.5;
+          z-index: 99;
+      }
+      .pop-up-button{
+          position: absolute;
+          top: 0;
+          right: 0;
+          padding: 35px;
+          outline: none;
+          border: none;
+          background-color: #e47312;
+          transition: all 300ms ease;
+          color: #fff;
+          font-size: 22px;
+          font-weight: 100;
+          text-transform: uppercase;
+          cursor: pointer;
+      }
+      .pop-up-list{
+          box-sizing: border-box;
+          position: fixed;
+          top: 0;
+          right: 0;
+          width: 500px;
+          height: 100%;
+          z-index: 10000;
+          padding: 95px 50px 35px 70px;
+          background-color: #fff;
+          color: black;
+          transition: all 0.2s ease-out;
+          display: none;
+      }
+
+      .list-wrapper{
+          margin-top: 80px;
+      }
+     
+      /* popup ends------------------------------ */
+
+      .info-wrapper:hover{
+          background-color: #e98a38;
+          color: white;
+      }
+
+      .button{
+          margin-top: 0x;
+          min-width: 160px;
+          padding: 15px 25px;
+          transition: all 300ms ease;
+          color: #fff;
+          font-weight: 500;
+          text-align:center;
+          letter-spacing: 1px;
+          background-color: #e47312;
+          border: 0;
+          cursor: pointer;
+      }
+      .button:hover{
+          background-color: #e98a38;
+      }
+      .change{
+
+          padding: 10px 20px;
+          transition: all 300ms ease;
+          color: #fff;
+          font-weight: 500;
+          text-align:center;
+          letter-spacing: 1px;
+          background-color: #e47312;
+          border: 0;
+          cursor: pointer;
+      }
+      .change:hover{
+          background-color: #e98a38;
+      }
+
+
+.top-title-section{
+box-sizing: border-box;
+width: 100%;
+height: 60px;
+position: relative;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.top-title.special{
+z-index: 2;
+position: relative;
+color: black;
+margin: 0;
+font-size: 40px;
+line-height: 50px;
+letter-spacing: 1px;
+font-weight: 600;
+}
+
+    </style>
 </head>
 
 <body>
@@ -36,30 +148,13 @@
     <%- include('../layouts/header.ejs') %>	
 	<!-- End Header Area -->
 
-    <!-- Start Banner Area -->
-    <section class="banner-area organic-breadcrumb">
-        <div class="container">
-            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
-                <div class="col-first">
-                    <h1>Checkout</h1>
-                    <nav class="d-flex align-items-center">
-                        <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="single-product.html">Checkout</a>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- End Banner Area -->
+
 
     <!--================Checkout Area =================-->
-    <section class="checkout_area section_gap">
+    <section class="checkout_area section_gap" style="margin-top: 50px;">
         <div class="container">
         
-            <div class="cupon_area">
-                <input type="text" placeholder="Enter coupon code">
-                <a class="tp_btn" href="#">Apply Coupon</a>
-            </div>
+           
             <div class="billing_details">
                 <div class="row">
                     <div class="col-lg-8">
@@ -98,17 +193,15 @@
                                     <label for="f-option2">Create an account?</label>
                                 </div>
                             </div>
-                            <div class="col-md-12 form-group">
-                                <div class="creat_account">
-                                    <h3>Shipping Details</h3>
-                                    <input type="checkbox" id="f-option3" name="selector">
-                                    <label for="f-option3">Ship to a different address?</label>
-                                </div>
-                                <textarea class="form-control" name="message" id="message" rows="1" placeholder="Order Notes"></textarea>
-                            </div>
+                           
                         </form>
+                        <div class="banner-desc" style="margin-left: 10px; margin-bottom: 30px;">
+                            <a class="button" style="color: #4d0101;" >CHANGE ADDRESS</a>
+                        </div>
+                        
                     </div>
                     <div class="col-lg-4">
+                    <form id="checkOut-form">
                         <div class="order_box">
                             <h2>Your Order</h2>
 
@@ -120,36 +213,41 @@
                                 <% }) %>
                             </ul>
                             <ul class="list list_2">
-                                <li><a href="#">Subtotal <span>$2160.00</span></a></li>
-                                <li><a href="#">Shipping <span>Flat rate: $50.00</span></a></li>
-                                <li><a href="#">Total <span>$2210.00</span></a></li>
+                                <li><a href="#">Subtotal <span>₹<%=total.cartTotal%></span></a></li>
+                                <li><a href="#">Total <span>₹<%=total.cartTotal%></span></a></li>
+                                <input type="hidden" name="total" value="<%=total.cartTotal%>" >
+                                <input type="hidden" name="address" value="<%=address[0]._id%>" >
+
                             </ul>
+                         
+                   
+                            <div class="coupon_area">
+                                    <input type="text" placeholder="Enter coupon code">
+                                    <a class="primary-btn" href="#" style="width: 100px; height: 40px; margin-top: 10px;">Apply</a>
+                            </div>
+
                             <div class="payment_item">
                                 <div class="radion_btn">
-                                    <input type="radio" id="f-option5" name="selector">
-                                    <label for="f-option5">Check payments</label>
+                                    <input type="radio" id="f-option5" name="paymentOption" value="cod" checked="true">
+                                    <label for="f-option5">Cash On Delivery</label>
                                     <div class="check"></div>
                                 </div>
-                                <p>Please send a check to Store Name, Store Street, Store Town, Store State / County,
-                                    Store Postcode.</p>
+                                <p>Pay the amount at your doorstep</p>
                             </div>
                             <div class="payment_item active">
                                 <div class="radion_btn">
-                                    <input type="radio" id="f-option6" name="selector">
+                                    <input type="radio" id="f-option6" name="paymentOption" value="payPal">
                                     <label for="f-option6">Paypal </label>
-                                    <img src="img/product/card.jpg" alt="">
+                                    <img src="../user-asset/img/product/card.jpg" alt="">
                                     <div class="check"></div>
                                 </div>
                                 <p>Pay via PayPal; you can pay with your credit card if you don’t have a PayPal
                                     account.</p>
                             </div>
-                            <div class="creat_account">
-                                <input type="checkbox" id="f-option4" name="selector">
-                                <label for="f-option4">I’ve read and accept the </label>
-                                <a href="#">terms & conditions*</a>
-                            </div>
-                            <a class="primary-btn" href="#">Proceed to Paypal</a>
+                          
+                            <button class="primary-btn" onclick="proceedToPayment()">Place Order</button>
                         </div>
+                    </form>
                     </div>
                 </div>
             </div>
@@ -237,6 +335,47 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 </p>
             </div>
         </div>
+
+
+
+
+        <div class="pop-up-list">
+            <button class="pop-up-button"><i class="fa fa-times" aria-hidden="true"></i>
+            </button>
+                <div class="top-title-section">
+                <p class="top-title special">Addresses</p>
+                </div>
+                <br>
+
+                <div class="comment-list grid-view" style="height: 500px; overflow-y:scroll;">
+                        <form id="addressForm" action="/changeDefaultAddress" method="POST">
+                        <% address.forEach(function(address,index) {%>
+                            <label for="address<%=index%>">Address</label>
+                        <input type="radio" id="addressRadio{<%=index%>" name="addressRadio" value="<%=address._id%>" onchange="this.form.submit()">
+                        <br>
+                        <div class="single-comment grid-item">
+                            <div class="user justify-content-between d-flex">
+                            <div class="desc">
+                                <h5>Name: <%=address.name%></h5>
+                                <h5>Number: <%=address.mobileNumber%></h5>
+                                <h5>Address: <%=address.address%></h5>
+                                <h5>City: <%=address.city%></h5>
+                                <h5>Street: <%=address.locality%></h5>
+                                <h5>Pin: <%=address.pincode%></h5>
+                            </div>
+                            </div>
+                        </div>
+                        <br>
+                        <% }) %>
+                    </form>
+                </div>
+        </div>
+        <div class="overlay-pop-up"></div>
+
+
+
+
+
     </footer>
     <!-- End footer Area -->
 
@@ -255,6 +394,68 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
     <script src="../user-assets/https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
     <script src="../user-assets/js/gmaps.min.js"></script>
     <script src="../user-assets/js/main.js"></script>
+
+
+
+    <script>
+
+        var popup = document.getElementsByClassName("pop-up-list")[0];
+        var overlay = document.getElementsByClassName("overlay-pop-up")[0];
+
+        var button = document.getElementsByClassName("button")[0];
+
+        var close = document.getElementsByClassName('pop-up-button')[0];
+
+        button.onclick=function(){
+        popup.style.display = "block";
+        overlay.style.display = "block";
+        }
+
+        overlay.onclick=function(){
+        popup.style.display = "none";
+        overlay.style.display = "none"; 
+        }
+        close.onclick=function(){
+        popup.style.display = "none";
+        overlay.style.display = "none"; 
+        
+        }
+    </script>
+<script>
+      function proceedToPayment() {
+        event.preventDefault()
+  $.ajax({
+    url: "/checkOut",
+    method: 'POST',
+    data: $('#checkOut-form').serialize(),
+    success: (response) => {
+      console.log(response,'+++++=========== ');
+      if (response.error) {
+        console.log(response,'error--------------------------------');
+
+        console.log(response.error.message,'---------------');
+        Swal.fire({
+          title: 'Error!',
+          text: response.error,
+          icon: 'error',
+          timer: 5000
+        })
+      } else if (response.codStatus == true) {
+        console.log("res"+response.codStatus)
+        console.log(response,'status');
+        Swal.fire({
+          title: 'Order Placed!',
+          text: 'Your order has been placed successfully.',
+          icon: 'success',
+          timer: 5000
+        }).then(() => {
+          location.href = '/'
+        })
+      } 
+    }
+})
+}
+</script>
 </body>
 
 </html>

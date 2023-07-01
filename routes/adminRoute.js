@@ -64,5 +64,9 @@ adminRoute.get('/updateProduct',validate.requireAuth,productController.loadUpdat
 adminRoute.post('/updateProduct',multer.upload,productController.updateProduct)
 
 
+//order
+adminRoute.get('/orderList',validate.requireAuth,adminController.orderList)
+
+adminRoute.get('/orderDetails',validate.requireAuth,adminController.orderDetails)
 adminRoute.get('/logout',adminController.logout)
 module.exports = adminRoute

@@ -70,9 +70,7 @@ userRoute.get('/cart',validate.requireAuth,cartController.loadCart)
 userRoute.post('/addToCart/:id',cartController.addToCart)
 
 userRoute.put('/change-product-quantity',cartController.updateQuantity)
-userRoute.delete(
-  "/delete-product-cart",
-  cartController.deleteProduct
+userRoute.delete("/delete-product-cart",cartController.deleteProduct
 );
 
 
@@ -84,8 +82,13 @@ userRoute.post('/updateAddress',profileController.editAddress)
 
 //checkout
 userRoute.get('/checkOut',orderController.checkOut)
+userRoute.post('/checkOut',orderController.postCheckOut)
 
+userRoute.post('/changeDefaultAddress',orderController.changePrimary)
 
+userRoute.get('/orderDetails',orderController.orderDetails)
+
+userRoute.get('/orderList',orderController.orderList)
 
 
 module.exports = userRoute

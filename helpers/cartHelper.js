@@ -18,19 +18,18 @@ const Product = require('../models/productModel')
 
 const addCart = async (productId,userId)=>{
   const product = await Product.findOne({_id:productId})
-  console.log(product)
     let productObj = {
         productId:productId,
         quantity:1,
         total:product.price
     }
+    console.log(productObj)
 
     try {
         return new Promise((resolve,reject)=>{ 
             Cart.findOne({user:userId}).then(async(cart)=>{
                 if(cart){
-                    let productExist = await Cart.findOne({ "cartItems.productId": productId });
-
+                    let productExist = await Cart.findOne({ user:userId,"cartItems.productId": productId });
                     if(productExist){
                         Cart.updateOne(
                             {user:userId,"cartItems.productId":productId},{
@@ -47,6 +46,7 @@ const addCart = async (productId,userId)=>{
                         })
                     
                     }else{
+                      console.log("new Product")
                         Cart.updateOne(
                             {user:userId},{$push:{cartItems:productObj},
                           $inc:{cartTotal:product.price}
@@ -76,7 +76,6 @@ const addCart = async (productId,userId)=>{
     }
 }
 const updateQuantity = async(data) => {
-  console.log(data)
     let cartId = data.cartId;
     let proId = data.proId;
     let userId = data.userId;
@@ -157,15 +156,12 @@ const updateQuantity = async(data) => {
     
     return new Promise((resolve, reject) => {
       try {
-        if (cart) {
+        
         const cartItem = cart.cartItems.find(item => item.productId.equals(data.proId));
-        if (cartItem) {
-        var quantity123 = cartItem.quantity;
-      }
-     }
+        const quantityToRemove = cartItem.quantity;
         Cart.updateOne( 
           { _id: cartId ,"cartItems.productId":proId},
-          { $inc: {cartTotal: product.price*quantity123 * -1 },
+          { $inc: {cartTotal: product.price* quantityToRemove * -1 },
           $pull: { cartItems: { productId: proId } },
            }
         ).then(() => {
@@ -177,58 +173,58 @@ const updateQuantity = async(data) => {
     });
   }
 
-  const getSubTotal = (userId)=>{
-    try {
-      return new Promise((resolve, reject) => {
-        Cart.aggregate([
-          {
-            $match: {
-              user:userId,
-            },
-          },
-          {
-            $unwind: "$cartItems",
-          },
-          {
-            $project: {
-              item: "$cartItems.productId",
-              quantity: "$cartItems.quantity",
-            },
-          },
-          {
-            $lookup: {
-              from: "products",
-              localField: "item",
-              foreignField: "_id",
-              as: "carted",
-            },
-          },
-          {
-            $project: {
-              item: 1,
-              quantity: 1,
+  // const getSubTotal = (userId)=>{
+  //   try {
+  //     return new Promise((resolve, reject) => {
+  //       Cart.aggregate([
+  //         {
+  //           $match: {
+  //             user:userId,
+  //           },
+  //         },
+  //         {
+  //           $unwind: "$cartItems",
+  //         },
+  //         {
+  //           $project: {
+  //             item: "$cartItems.productId",
+  //             quantity: "$cartItems.quantity",
+  //           },
+  //         },
+  //         {
+  //           $lookup: {
+  //             from: "products",
+  //             localField: "item",
+  //             foreignField: "_id",
+  //             as: "carted",
+  //           },
+  //         },
+  //         {
+  //           $project: {
+  //             item: 1,
+  //             quantity: 1,
 
-              price: {
-                $arrayElemAt: ["$carted.price", 0],
-              },
-            },
-          },
-          {
-            $project: {
-              total: { $multiply: ["$quantity", "$price"] },
-            },
-          },
-        ]).then((total) => {
-          const totals = total.map((obj) => obj.total);
+  //             price: {
+  //               $arrayElemAt: ["$carted.price", 0],
+  //             },
+  //           },
+  //         },
+  //         {
+  //           $project: {
+  //             total: { $multiply: ["$quantity", "$price"] },
+  //           },
+  //         },
+  //       ]).then((total) => {
+  //         const totals = total.map((obj) => obj.total);
 
-          resolve({ total, totals });
-        });
-      });
-      console.log(Cart.user+':'+':'+userId)
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
+  //         resolve({ total, totals });
+  //       });
+  //     });
+  //     console.log(Cart.user+':'+':'+userId)
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // }
 
  
             
@@ -240,5 +236,5 @@ const updateQuantity = async(data) => {
     updateQuantity,
     getCartCount,
     deleteProduct,
-    getSubTotal,
+    // getSubTotal,
  }

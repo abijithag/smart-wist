@@ -2,6 +2,7 @@ const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
 const Address = require("../models/AddressModel");
 const profiletHelper = require("../helpers/profileHelper");
+const Order = require('../models/orderModel');
 
 // Load profile
 // const profile = async (req, res) => {
@@ -20,15 +21,12 @@ const profiletHelper = require("../helpers/profileHelper");
 // };
 const profile = async (req, res) => {
   try {
-    console.log('PROFILE')
 
     const user = res.locals.user;
-    const address = await Address.find();
+    const address = await Address.find({user:user._id});
     const ad = address.forEach((x) => {
       return (arr = x.addresses);
     });
-    console.log(arr);
-
     res.render("profile", { user, arr });
   } catch (error) {
     console.log(error.message);
