@@ -1,5 +1,7 @@
 const User = require('../models/userModel')
 const Product = require('../models/productModel')
+const Category = require('../models/categoryModel')
+
 const jwt = require('jsonwebtoken');
 require('dotenv').config(); // Module to Load environment variables from .env file
 const userHelper = require('../helpers/userHelper')
@@ -28,8 +30,9 @@ const securePassword = async(password)=>{
     }
 }
 const homeLoad = async(req,res)=>{
-    try {        
-        res.render("home",{user:res.locals.user})
+    try { 
+        const category = await Category.find({ })
+        res.render("home",{user:res.locals.user,category})
     } catch (error) {
         console.log(error.message);
     }
@@ -260,8 +263,9 @@ const logout = (req,res) =>{
 
 const displayProduct = async(req,res)=>{
     try {
+        const category = await Category.find({ })
         const product = await Product.find({ $and: [{ isListed: true }, { isProductListed: true }] }).populate('category');
-        res.render('shop',{product:product})    
+        res.render('shop',{product:product,category})    
     } catch (error) {
       console.log(error.message)
     }
@@ -274,6 +278,66 @@ const checkOut = (req,res)=>{
         console.log(error.message)
         
     }
+}
+
+///edit info
+
+const editInfo = async (req, res) => {
+    try {
+      userId = res.locals.user._id;
+      console.log("userid:" + userId);
+      const { fname, lname, email, mobile } = req.body;
+  
+      const result = await User.updateOne(
+        { _id: userId }, // Specify the user document to update based on the user ID
+        { $set: { fname, lname, email, mobile } } // Set the new field values
+      );
+  
+      res.redirect("/profile");
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  
+  //editPassword
+  const editPassword = async (req, res) => {
+    try {
+      const newPass = req.body.newPass;
+      const confPass = req.body.confPass;
+      userId = res.locals.user._id;
+  
+      if (newPass === confPass) {
+        const spassword = await securePassword(confPass);
+  
+        const result = await User.updateOne(
+          { _id: userId }, 
+          { $set: { password: spassword } } 
+        );
+        console.log(result);
+        res.redirect('/profile')
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const categoryPage = async (req,res) =>{
+
+    try{
+        const category = await Category.find({ })
+
+        const  categoryId = req.query.id
+
+        const categories = await Category.find({ })
+         
+        const product = await Product.find({ category:categoryId,$and: [{ isListed: true }, { isProductListed: true }]}).populate('category')
+        // console.log("products",products);
+        // console.log("categories",categories);
+        res.render('shop',{product,category })
+    }
+    catch(err){
+        console.log('category page error',err);
+    }
 }
 
 module.exports = {
@@ -291,6 +355,9 @@ module.exports = {
     profile,
     logout,
     displayProduct,
-    checkOut
+    checkOut,
+    editInfo,
+    editPassword,
+    categoryPage
 
 }

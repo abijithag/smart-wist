@@ -72,6 +72,7 @@ const placeOrder = (data,user)=>{
                 shippingAddress: addressData[0],
                 orderStatus: orderStatus,
                 totalPrice: data.total,
+                cancelStatus:'false',
                 createdAt:new Date()
               };
               console.log(orderData)
@@ -140,7 +141,30 @@ const findOrder  = (orderId, userId) => {
     console.log(error.message);
   }
 }
+
+const cancelOrder = async(orderId,status)=>{
+  try {
+    return new Promise((resolve, reject) => {
+      Order.updateOne(
+        { "orders._id": new ObjectId(orderId) },
+        {
+          $set: { "orders.$.orderStatus": status },
+        }
+      ).then((response) => {
+        console.log(response, "$$$$$$$$$$$$$$");
+        resolve(response);
+      });
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+
+
 module.exports = {
     placeOrder,
-    findOrder
+    findOrder,
+    cancelOrder
+
 }

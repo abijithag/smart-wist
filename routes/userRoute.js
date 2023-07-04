@@ -63,15 +63,14 @@ userRoute.post('/setNewPassword',userController.setNewPassword)
 
 userRoute.get('/shop',userController.displayProduct)
 userRoute.get('/productPage',productController.productPage)
-
+userRoute.get('/categoryShop',userController.categoryPage)
 
 //cart
 userRoute.get('/cart',validate.requireAuth,cartController.loadCart)
 userRoute.post('/addToCart/:id',cartController.addToCart)
 
 userRoute.put('/change-product-quantity',cartController.updateQuantity)
-userRoute.delete("/delete-product-cart",cartController.deleteProduct
-);
+userRoute.delete("/delete-product-cart",cartController.deleteProduct);
 
 
 //profile
@@ -79,16 +78,21 @@ userRoute.delete("/delete-product-cart",cartController.deleteProduct
 userRoute.get('/profile',block.checkBlocked,validate.requireAuth,profileController.profile)
 userRoute.post('/submitAddress',profileController.submitAddress)
 userRoute.post('/updateAddress',profileController.editAddress)
+userRoute.post('/editPassword',userController.editPassword)
+userRoute.post('/editInfo',userController.editInfo)
+
 
 //checkout
 userRoute.get('/checkOut',orderController.checkOut)
 userRoute.post('/checkOut',orderController.postCheckOut)
+userRoute.post('/checkOutAddress',profileController.checkOutAddress)
+
 
 userRoute.post('/changeDefaultAddress',orderController.changePrimary)
-
+userRoute.get('/deleteAddress',profileController.deleteAddress)
 userRoute.get('/orderDetails',orderController.orderDetails)
 
 userRoute.get('/orderList',orderController.orderList)
 
-
+userRoute.put('/cancelOrder',orderController.cancelOrder)
 module.exports = userRoute

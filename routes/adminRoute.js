@@ -3,6 +3,8 @@ const adminRoute = express()
 const adminController = require('../controllers/adminController')
 const categoryController = require('../controllers/categoryController')
 const productController = require('../controllers/productController')
+const orderController = require('../controllers/orderController')
+
 const multer = require("../multer/multer");
 
 const validate = require('../middleware/adminAuth');
@@ -68,5 +70,10 @@ adminRoute.post('/updateProduct',multer.upload,productController.updateProduct)
 adminRoute.get('/orderList',validate.requireAuth,adminController.orderList)
 
 adminRoute.get('/orderDetails',validate.requireAuth,adminController.orderDetails)
+adminRoute.put('/orderStatus',adminController.changeStatus)
+adminRoute.put('/cancelOrder',adminController.cancelOrder)
+adminRoute.put('/returnOrder',adminController.returnOrder)
+
+
 adminRoute.get('/logout',adminController.logout)
 module.exports = adminRoute

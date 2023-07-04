@@ -43,7 +43,125 @@ const getAllOrder  = () => {
     }
   }
 
+  const changeOrderStatus = (orderId, status) => {
+    try {
+      return new Promise((resolve, reject) => {
+        Order.updateOne(
+          { "orders._id": new ObjectId(orderId) },
+          {
+            $set: { "orders.$.orderStatus": status },
+          }
+        ).then((response) => {
+          console.log(response, "$$$$$$$$$$$$$$");
+          resolve({status:true,orderStatus:status});
+        });
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+  // const cancelOrder = (orderId,status) => {
+  //   try {
+  //     return new Promise(async(resolve, reject) => {
+  //       Order.findOne({ "orders._id": new ObjectId(orderId) }).then((orders) => {
+  //       const order = orders.orders.find((order) => order._id == orderId)
+
+  //       if(status=='Cancel Accepted'||status=='Cancel Declined')
+  //       Order.updateOne(
+  //         { "orders._id": new ObjectId(orderId) },
+  //         {
+  //           $set: { "orders.$.cancelStatus": status, 
+  //                   "orders.$.orderStatus":status,
+  //                   "orders.$.paymentStatus":"No Refund"
+  //                  }
+  //         }
+        
+          
+  
+  //       ).then((response) => {
+  //         resolve(response);
+  //       });
+  //     });
+
+  //     });
+    
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // }
+  const cancelOrder = (orderId, status) => {
+    try {
+      return new Promise(async (resolve, reject) => {
+        Order.findOne({ "orders._id": new ObjectId(orderId) }).then((orders) => {
+          const order = orders.orders.find((order) => order._id == orderId);
+  
+          if (status == 'Cancel Accepted' || status == 'Cancel Declined') {
+            Order.updateOne(
+              { "orders._id": new ObjectId(orderId) },
+              {
+                $set: {
+                  "orders.$.cancelStatus": status,
+                  "orders.$.orderStatus": status,
+                  "orders.$.paymentStatus": "No Refund"
+                }
+              }
+            ).then((response) => {
+              resolve(response);
+            });
+          }
+        });
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const returnOrder = (orderId, status) => {
+    try {
+      return new Promise(async (resolve, reject) => {
+        Order.findOne({ "orders._id": new ObjectId(orderId) }).then((orders) => {
+          const order = orders.orders.find((order) => order._id == orderId);
+  
+          if (status == 'Return Declined') {
+            Order.updateOne(
+              { "orders._id": new ObjectId(orderId) },
+              {
+                $set: {
+                  "orders.$.cancelStatus": status,
+                  "orders.$.orderStatus": status,
+                  "orders.$.paymentStatus": "No Refund"
+                }
+              }
+            ).then((response) => {
+              resolve(response);
+            });
+          }else if(status == 'Return Accepted'){
+            Order.updateOne(
+              { "orders._id": new ObjectId(orderId) },
+              {
+                $set: {
+                  "orders.$.cancelStatus": status,
+                  "orders.$.orderStatus": status,
+                  "orders.$.paymentStatus": "Refund Credited to Wallet"
+                }
+              }
+            ).then((response) => {
+              resolve(response);
+            });
+
+          }
+        });
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  
+
   module.exports = {
     getAllOrder,
-    findOrder
+    findOrder,
+    changeOrderStatus,
+    cancelOrder,
+    returnOrder
   }

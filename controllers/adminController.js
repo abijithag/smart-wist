@@ -158,19 +158,51 @@ const unBlockUser = async(req,res)=>{
   }
 }
 
-const orderList = async(req,res)=>{
-    try {
-        const orders = await Order.aggregate([
-            { $unwind: "$orders" },
-            { $sort: { 'orders.createdAt' : -1 } },
-          ])
-        res.render('orderList',{orders})          
-      console.log(orders[0].orders.name);
-    } catch (error) {
-        console.log(error.message)
+// const orderList = async(req,res)=>{
+//     try {
+//         const orders = await Order.aggregate([
+//             { $unwind: "$orders" },
+//             { $sort: { 'orders.createdAt' : -1 } },
+//           ])
+//         res.render('orderList',{orders})          
+//     } catch (error) {
+//         console.log(error.message)
         
-    }
-}
+//     }
+// }
+
+
+
+const orderList = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Current page number, default is 1
+    const limit = parseInt(req.query.limit) || 5; // Number of items per page, default is 10
+
+    const totalOrders = await Order.aggregate([
+      { $unwind: "$orders" },
+      { $group: { _id: null, count: { $sum: 1 } } },
+    ]);
+    const count = totalOrders.length > 0 ? totalOrders[0].count : 0;
+    const totalPages = Math.ceil(count / limit);
+    console.log(totalPages);
+
+    const skip = (page - 1) * limit;
+
+    const orders = await Order.aggregate([
+      { $unwind: "$orders" },
+      { $sort: { "orders.createdAt": -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+
+    res.render("orderList", { orders, totalPages, page,limit });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+
 
 
 
@@ -181,7 +213,7 @@ const orderDetails = async (req,res)=>{
       adminHelper.findOrder(id).then((orders) => {
         const address = orders[0].shippingAddress
         const products = orders[0].productDetails 
-        res.render('orderDetails',{orders,address,products})
+        res.render('orderDetails',{orders,address,products}) 
       });
         
     } catch (error) {
@@ -197,7 +229,35 @@ const logout = (req,res) =>{
 }
 
 
+const changeStatus = async(req,res)=>{
+  const orderId = req.body.orderId
+  const status = req.body.status
+  console.log(orderId)
+  adminHelper.changeOrderStatus(orderId, status).then((response) => {
+    console.log(response);
+    res.json(response);
+  });
 
+}
+
+const cancelOrder = async(req,res)=>{
+  const orderId = req.body.orderId
+  const status = req.body.status
+
+  adminHelper.cancelOrder(orderId,status).then((response) => {
+    res.send(response);
+  });
+
+}
+const returnOrder = async(req,res)=>{
+  const orderId = req.body.orderId
+  const status = req.body.status
+
+  adminHelper.returnOrder(orderId,status).then((response) => {
+    res.send(response);
+  });
+
+}
 
 
 
@@ -213,5 +273,8 @@ module.exports = {
     unBlockUser,
     logout,
     orderList,
-    orderDetails
+    orderDetails,
+    changeStatus,
+    cancelOrder,
+    returnOrder
 }

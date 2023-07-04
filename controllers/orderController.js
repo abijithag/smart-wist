@@ -10,6 +10,7 @@ const checkOut = async (req,res)=>{
         const user = res.locals.user
         const total = await Cart.findOne({ user: user.id });
         const address = await Address.findOne({user:user._id}).lean().exec()
+        
         const cart = await Cart.aggregate([
             {
               $match: { user: user.id }
@@ -34,7 +35,11 @@ const checkOut = async (req,res)=>{
               }
             }
           ]);
-        res.render('checkOut',{address:address.addresses,cart,total})
+      if(address){
+        res.render('checkOut',{address:address.addresses,cart,total}) 
+      }else{
+        res.render('checkOut',{address:[],cart,total})
+      }
     } catch (error) {
         console.log(error.message)
         
@@ -140,10 +145,26 @@ const orderList  = async(req,res)=>{
 
 }
 
+const cancelOrder = async(req,res)=>{
+  let orderId = req.body.orderId
+  let status = req.body.status
+  console.log(orderId)
+  orderHelper.cancelOrder(orderId, status).then((response) => {
+    console.log(response);
+    res.send(response);
+  });
+
+
+}
+
+
+
 module.exports = {
     checkOut,
     changePrimary,
     postCheckOut,
     orderDetails,
-    orderList
+    orderList,
+    cancelOrder
+
 }

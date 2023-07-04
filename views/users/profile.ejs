@@ -313,6 +313,8 @@
                                             <p style="margin: 0;"><strong>Name:</strong> <%=user.fname%> </p>
                                             <p style="margin: 0;"><strong>Email:</strong> <%=user.email%> </p>
                                             <p style="margin: 0;"><strong>Mobile Number:</strong> <%=user.mobile%> </p>
+                                            <a href="#" onclick="openPopup()" style="color: green;">Edit Info</a>
+                                              <a href="#" onclick="openPassPopup()" style="color: green;">Change Password</a>
                                           </div>
                                         </div>
                                       </div>
@@ -475,6 +477,48 @@
             </div>
         </div>
     </div>
+    <!-- popup -->
+
+    <div id="popupe" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #fff; border: 1px solid #ccc; padding: 20px; z-index: 9999; display: none;">
+      <button onclick="closePopup()" style="position: absolute; top: 10px; right: 10px; background-color: transparent; border: none; font-size: 20px; cursor: pointer;">&times;</button>
+      <form  method="post" action="/editInfo">
+          <label for="fname">First Name:</label>
+          <input type="text" id="fname" name="fname" value=" <%=user.fname%>" required>
+          
+          <label for="lname">Last Name:</label>
+          <input type="text" id="lname" name="lname" value=" <%=user.lname%>" required>
+          
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value=" <%=user.email%>" required>
+      
+        
+        <label for="mobile">Mobile Number:</label>
+        <input type="text" id="mobile" name="mobile" value=" <%=user.mobile%>" required>
+        
+        <button type="submit">Save</button>
+      </form>
+    </div>
+
+    <!-- popup -->
+
+
+
+    <!-- popup -->
+
+    <div id="popupp" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #fff; border: 1px solid #ccc; padding: 20px; z-index: 9999; display: none;">
+      <button onclick="closePassPopup()" style="position: absolute; top: 10px; right: 10px; background-color: transparent; border: none; font-size: 20px; cursor: pointer;">&times;</button>
+      <form method="post" action="/editPassword" onsubmit="return validatePasswords()">
+        <label for="newPass">New Password:</label>
+        <input type="password" id="newPass" name="newPass" required>
+        <br><br>
+        <label for="confPass">Confirm Password:</label>
+        <input type="password" id="confPass" name="confPass" required>
+        <br><br>
+        <button type="submit">Save</button>
+      </form>
+    </div>
+
+    <!-- popup -->
 
 
       <!-- Start Header Area -->
@@ -557,6 +601,43 @@
     });
   });
 </script>
+
+
+<script>
+  function openPopup() {
+    var popup = document.getElementById("popupe");
+    popup.style.display = "block";
+  }
+
+  function closePopup() {
+    var popup = document.getElementById("popupe");
+    popup.style.display = "none";
+  }
+</script>
+
+
+<script>
+function openPassPopup() {
+var popup = document.getElementById("popupp");
+popup.style.display = "block";
+}
+function closePassPopup() {
+var popup = document.getElementById("popupp");
+popup.style.display = "none";
+}
+
+function validatePasswords() {
+var newPassword = document.getElementById("newPass").value;
+var confirmPassword = document.getElementById("confPass").value;
+
+if (newPassword !== confirmPassword) {
+alert("Passwords do not match");
+return false; // Prevent form submission
+}
+
+return true; // Allow form submission
+  }
+  </script>
 
 
 

@@ -83,7 +83,14 @@
                                 <td><%=order.createdAt.toLocaleString()%></td>
                                 <td><%=order.orderStatus%></td>
                                 <td>₹<%=order.totalPrice%></td>
-                                <td><a href="/orderDetails?id=<%=order._id%>" class="btn-small d-block">View</a></td>
+                                <td><a href="/orderDetails?id=<%=order._id%>" class="btn btn=primary">View</a>
+									<%if(order.orderStatus=='Placed'){%>
+								<a  onclick="cancelOrder('<%=order._id%>','Cancel Requested')" class="btn btn-danger">Cancel</a>
+								<%}else if(order.orderStatus=='Delivered'){%>
+									<a  onclick="cancelOrder('<%=order._id%>','Return Requested')" class="btn btn-warning">Return</a>
+									<%}%>
+
+							</td>
                             </tr>
                             <% }) %>
 
@@ -190,5 +197,31 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 	<script src="../user-assets/js/gmaps.min.js"></script>
 	<script src="../user-assets/js/main.js"></script>
 </body>
+<script>
+  
+  
+    function cancelOrder(orderId,status)
+    {
+      console.log(orderId);
+      $.ajax({
+        url:'/cancelOrder',
+        method:'put',
+        data: {
+          orderId: orderId,
+		  status:status
+
+        },
+        success:(response)=>
+        {
+          if(response)
+          {
+            location.reload()
+          }
+        }
+      })
+    }
+    
+    </script>
+    
 
 </html>
