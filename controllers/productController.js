@@ -1,9 +1,6 @@
-// const Admin = require('../models/adminModel')
-// const User = require('../models/userModel')
-// const path = require('path');
+
 const Product = require('../models/productModel')
 const Category = require('../models/categoryModel')
-// const multer = require('multer');
 const productHelper = require('../helpers/productHelper')
 
 

@@ -5,7 +5,7 @@
 <!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-orders-1.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:21 GMT -->
 <head>
     <meta charset="utf-8">
-    <title>Evara Dashboard</title>
+    <title>Smart Wrist</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -165,15 +165,18 @@
                                             <div class="dropdown-menu">
                                                 <%if(order.orders.orderStatus=='Placed'||order.orders.orderStatus=='Cancel Declined'){%>
                                                 <a class="dropdown-item" onclick="orderStatus('<%=order.orders._id%>','Dispatched')">Dispatched</a>
+                                                <a class="dropdown-item" onclick="cancelStatus('<%=order.orders._id%>','<%=order.user%>','Cancel Accepted')">Cancel Order</a>
+
                                                 <%}else if(order.orders.orderStatus=='Dispatched'){%>
                                                 <a class="dropdown-item" onclick="orderStatus('<%=order.orders._id%>','Delivered')">Delivered</a>
                                                 <%}else if(order.orders.orderStatus=='Cancel Requested'){%>
-                                                    <a class="dropdown-item" onclick="cancelStatus('<%=order.orders._id%>','Cancel Accepted')"> Accept Cancel</a>
-                                                    <a class="dropdown-item" onclick="cancelStatus('<%=order.orders._id%>','Cancel Declined')">Decline Cancel</a>
+                                                    <a class="dropdown-item" onclick="cancelStatus('<%=order.orders._id%>','<%=order.user%>','Cancel Accepted')"> Accept Cancel</a>
+                                                    <a class="dropdown-item" onclick="cancelStatus('<%=order.orders._id%>','<%=order.user%>','Cancel Declined')">Decline Cancel</a>
                                                     <%}else if(order.orders.orderStatus=='Return Requested'){%>
-                                                        <a class="dropdown-item" onclick="returnOrder('<%=order.orders._id%>','Return Accepted')"> Accept Return</a>
-                                                    <a class="dropdown-item" onclick="returnOrder('<%=order.orders._id%>','Return Declined')">Decline Return</a>
+                                                        <a class="dropdown-item" onclick="returnOrder('<%=order.orders._id%>','<%=order.user%>','Return Accepted')"> Accept Return</a>
+                                                    <a class="dropdown-item" onclick="returnOrder('<%=order.orders._id%>','<%=order.user%>','Return Declined')">Decline Return</a>
                                                     <%}%>
+
                                                    
 
 
@@ -251,7 +254,9 @@
         method:'put',
         data: {
           orderId: orderId,
-          status: status
+          status: status,
+      
+
         },
         success:(response)=>
         {
@@ -264,15 +269,16 @@
         }
       })
     }
-    function cancelStatus(orderId, status)
+    function cancelStatus(orderId,userId, status)
     {
-      console.log(orderId, status);
+      console.log(orderId, status,userId);
       $.ajax({
         url:'/admin/cancelOrder',
         method:'put',
         data: {
           orderId: orderId,
-          status: status
+          status: status,
+          userId:userId 
         },
         success:(response)=>
         {
@@ -283,7 +289,7 @@
         }
       })
     }
-    function returnOrder(orderId, status)
+    function returnOrder(orderId,userId, status)
     {
       console.log(orderId, status);
       $.ajax({
@@ -291,7 +297,8 @@
         method:'put',
         data: {
           orderId: orderId,
-          status: status
+          status: status,
+          userId:userId 
         },
         success:(response)=>
         {

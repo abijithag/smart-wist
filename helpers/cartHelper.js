@@ -6,19 +6,10 @@ const Product = require('../models/productModel')
 
 
 
-// async function cartTotalfind (userId){
-//   const cart = await Cart.findOne({user:userId})
-//   let cartTotals = 0
-//   for (let i = 0; i < cart.cartItems.length; i++) {
-//     cartTotals += cart.cartItems[i].total;
-//   }
-//   return cartTotals
-// }
-
 
 const addCart = async (productId,userId)=>{
   const product = await Product.findOne({_id:productId})
-    let productObj = {
+    const productObj = {
         productId:productId,
         quantity:1,
         total:product.price
@@ -29,7 +20,7 @@ const addCart = async (productId,userId)=>{
         return new Promise((resolve,reject)=>{ 
             Cart.findOne({user:userId}).then(async(cart)=>{
                 if(cart){
-                    let productExist = await Cart.findOne({ user:userId,"cartItems.productId": productId });
+                    const productExist = await Cart.findOne({ user:userId,"cartItems.productId": productId });
                     if(productExist){
                         Cart.updateOne(
                             {user:userId,"cartItems.productId":productId},{
@@ -57,7 +48,7 @@ const addCart = async (productId,userId)=>{
 
                     }
                 }else{
-                    let newCart = await Cart({
+                    const newCart = await Cart({
                         user:userId,
                         cartItems:productObj,
                         cartTotal:product.price
@@ -76,31 +67,24 @@ const addCart = async (productId,userId)=>{
     }
 }
 const updateQuantity = async(data) => {
-    let cartId = data.cartId;
-    let proId = data.proId;
-    let userId = data.userId;
-    let count = data.count;
-    let quantity = data.quantity;
-    // const cart = await Cart.findOne({user:userId})
+    const cartId = data.cartId;
+    const proId = data.proId;
+    const userId = data.userId;
+    const count = data.count;
+    const quantity = data.quantity;
     const product = await Product.findOne({_id:proId})
 
     try {
       return new Promise(async (resolve, reject) => {
         if (count == -1 && quantity == 1) {
-          // Cart.updateOne(
-          //   { _id: cartId,"cartItems.productId": proId },
-           
-          //   {
-          //     $pull: { cartItems: { productId: proId } }
-          //   }
-          // )
+        
           Cart.findOneAndUpdate(
             { _id: cartId, "cartItems.productId": proId },
             {
               $pull: { cartItems: { productId: proId } },
-              $inc: {cartTotal:product.price * count } // Increment the "itemCount" field by 1
+              $inc: {cartTotal:product.price * count } 
             },
-            { new: true } // Return the updated document after the update
+            { new: true }
           )
           
           .then(() => { 
@@ -149,8 +133,8 @@ const updateQuantity = async(data) => {
   }
 
   const deleteProduct =  async (data) => {
-    let cartId = data.cartId;
-    let proId = data.proId;
+    const cartId = data.cartId;
+    const proId = data.proId;
     const product = await Product.findOne({_id:proId})
     const cart = await Cart.findOne({ _id: cartId, "cartItems.productId": data.proId });
     
@@ -173,58 +157,7 @@ const updateQuantity = async(data) => {
     });
   }
 
-  // const getSubTotal = (userId)=>{
-  //   try {
-  //     return new Promise((resolve, reject) => {
-  //       Cart.aggregate([
-  //         {
-  //           $match: {
-  //             user:userId,
-  //           },
-  //         },
-  //         {
-  //           $unwind: "$cartItems",
-  //         },
-  //         {
-  //           $project: {
-  //             item: "$cartItems.productId",
-  //             quantity: "$cartItems.quantity",
-  //           },
-  //         },
-  //         {
-  //           $lookup: {
-  //             from: "products",
-  //             localField: "item",
-  //             foreignField: "_id",
-  //             as: "carted",
-  //           },
-  //         },
-  //         {
-  //           $project: {
-  //             item: 1,
-  //             quantity: 1,
-
-  //             price: {
-  //               $arrayElemAt: ["$carted.price", 0],
-  //             },
-  //           },
-  //         },
-  //         {
-  //           $project: {
-  //             total: { $multiply: ["$quantity", "$price"] },
-  //           },
-  //         },
-  //       ]).then((total) => {
-  //         const totals = total.map((obj) => obj.total);
-
-  //         resolve({ total, totals });
-  //       });
-  //     });
-  //     console.log(Cart.user+':'+':'+userId)
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // }
+ 
 
  
             
@@ -236,5 +169,4 @@ const updateQuantity = async(data) => {
     updateQuantity,
     getCartCount,
     deleteProduct,
-    // getSubTotal,
  }

@@ -4,21 +4,7 @@ const Address = require("../models/AddressModel");
 const profiletHelper = require("../helpers/profileHelper");
 const Order = require('../models/orderModel');
 
-// Load profile
-// const profile = async (req, res) => {
-//   try {
-//     const user = res.locals.user;
-//     const address = await Address.find();
-//     const ad = address.forEach((x) => {
-//       return (arr = x.addresses);
-//     });
-//     console.log(arr);
 
-//     res.render("profile", { user, arr });
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
 const profile = async (req, res) => {
   try {
     let arr = []
@@ -94,7 +80,7 @@ const editAddress = async (req, res) => {
   const mobileNumber = req.body.mobileNumber;
 
   const update = await Address.updateOne(
-    { "addresses._id": id }, // Match the document with the given ID
+    { "addresses._id": id }, 
     {
       $set: {
         "addresses.$.name": name,
@@ -121,8 +107,8 @@ const deleteAddress = async (req, res) => {
   console.log(addId);
 
   const deleteobj = await Address.updateOne(
-    { user: userId }, // Match the user based on the user ID
-    { $pull: { addresses: { _id: addId } } } // Remove the object with matching _id from addresses array
+    { user: userId }, 
+    { $pull: { addresses: { _id: addId } } }
   );
 
   res.redirect("/profile");
@@ -141,7 +127,6 @@ const checkOutAddress = async (req, res) => {
     const pincode = req.body.pincode;
     const state = req.body.state;
 
-    // Create a new address object
     const newAddress = {
       name: name,
       mobileNumber: mobileNumber,
@@ -154,13 +139,11 @@ const checkOutAddress = async (req, res) => {
 
     const updatedUser = await profiletHelper.updateAddress(userId, newAddress);
     if (!updatedUser) {
-      // No matching document found, create a new one
       await profiletHelper.createAddress(userId, newAddress);
     }
 
-    // res.json({ message: "Address saved successfully!" });
 
-    res.redirect("/checkOut"); // Redirect to the profile page after saving the address
+    res.redirect("/checkOut"); 
   } catch (error) {
     console.log(error.message);
   }

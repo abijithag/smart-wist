@@ -261,15 +261,37 @@ const logout = (req,res) =>{
     res.redirect('/')
 }
 
-const displayProduct = async(req,res)=>{
+// const displayProduct = async(req,res)=>{
+//     try {
+//         const category = await Category.find({ })
+//         const product = await Product.find({ $and: [{ isListed: true }, { isProductListed: true }] }).populate('category');
+//         res.render('shop',{product:product,category})    
+//     } catch (error) {
+//       console.log(error.message)
+//     }
+//   }
+const displayProduct = async (req, res) => {
     try {
-        const category = await Category.find({ })
-        const product = await Product.find({ $and: [{ isListed: true }, { isProductListed: true }] }).populate('category');
-        res.render('shop',{product:product,category})    
+      const category = await Category.find({});
+      const page = parseInt(req.query.page) || 1; 
+      const limit = 6;
+      const skip = (page - 1) * limit; // Calculate the number of products to skip
+  
+      // Fetch products with pagination
+      const totalProducts = await Product.countDocuments({ $and: [{ isListed: true }, { isProductListed: true }] }); // Get the total number of products
+      const totalPages = Math.ceil(totalProducts / limit); // Calculate the total number of pages
+  
+      const products = await Product.find({ $and: [{ isListed: true }, { isProductListed: true }] })
+        .skip(skip)
+        .limit(limit)
+        .populate('category');
+  
+      res.render('shop', { product: products, category, currentPage: page, totalPages });
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
-  }
+  };
+  
 
 const checkOut = (req,res)=>{
     try {
@@ -324,16 +346,23 @@ const editInfo = async (req, res) => {
   const categoryPage = async (req,res) =>{
 
     try{
-        const category = await Category.find({ })
-
         const  categoryId = req.query.id
+        const category = await Category.find({ })
+        const page = parseInt(req.query.page) || 1; 
+        const limit = 6;
+        const skip = (page - 1) * limit;
+        const totalProducts = await Product.countDocuments({ category:categoryId,$and: [{ isListed: true }, { isProductListed: true }]}); // Get the total number of products
+        const totalPages = Math.ceil(totalProducts / limit);
 
         const categories = await Category.find({ })
          
-        const product = await Product.find({ category:categoryId,$and: [{ isListed: true }, { isProductListed: true }]}).populate('category')
+        const product = await Product.find({ category:categoryId,$and: [{ isListed: true }, { isProductListed: true }]})
+        .skip(skip)
+        .limit(limit)
+        .populate('category')
         // console.log("products",products);
         // console.log("categories",categories);
-        res.render('shop',{product,category })
+        res.render('categoryShop',{product,category, currentPage: page, totalPages })
     }
     catch(err){
         console.log('category page error',err);

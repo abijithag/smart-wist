@@ -25,14 +25,16 @@ const userSchema  = mongoose.Schema({
         type:Number,
         required:true,
         default:false
+    },
+    wallet:{
+        type:Number,
+        default:0
+    },
+    coupons:{
+        type:Array,
     }
 })
 
-// userSchema.methods.generateJWT = function(){
-//     const token = jwt.sign({
-//         _id:this._id,
-//         number:this.mobile
-//     },process.env.JWT_SECRET_KEY,{expiresIn : '7d'})
-// }
+
 
 module.exports = mongoose.model('User',userSchema)

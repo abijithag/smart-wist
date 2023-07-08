@@ -1,5 +1,7 @@
 const Order = require('../models/orderModel');
 const { ObjectId } = require("mongodb");
+const User = require('../models/userModel');
+
 
 const getAllOrder  = () => {
     try {
@@ -60,40 +62,15 @@ const getAllOrder  = () => {
       console.log(error.message);
     }
   }
-  // const cancelOrder = (orderId,status) => {
-  //   try {
-  //     return new Promise(async(resolve, reject) => {
-  //       Order.findOne({ "orders._id": new ObjectId(orderId) }).then((orders) => {
-  //       const order = orders.orders.find((order) => order._id == orderId)
 
-  //       if(status=='Cancel Accepted'||status=='Cancel Declined')
-  //       Order.updateOne(
-  //         { "orders._id": new ObjectId(orderId) },
-  //         {
-  //           $set: { "orders.$.cancelStatus": status, 
-  //                   "orders.$.orderStatus":status,
-  //                   "orders.$.paymentStatus":"No Refund"
-  //                  }
-  //         }
-        
-          
-  
-  //       ).then((response) => {
-  //         resolve(response);
-  //       });
-  //     });
-
-  //     });
-    
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // }
-  const cancelOrder = (orderId, status) => {
+  const cancelOrder = (orderId,userId, status) => {
     try {
+      console.log(status);
+
       return new Promise(async (resolve, reject) => {
         Order.findOne({ "orders._id": new ObjectId(orderId) }).then((orders) => {
           const order = orders.orders.find((order) => order._id == orderId);
+          if(order.paymentMethod=='cod'){
   
           if (status == 'Cancel Accepted' || status == 'Cancel Declined') {
             Order.updateOne(
@@ -109,20 +86,28 @@ const getAllOrder  = () => {
               resolve(response);
             });
           }
-        });
-      });
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+        }else if(order.paymentMethod=='wallet'){
+                    console.log(status);
 
-  const returnOrder = (orderId, status) => {
-    try {
-      return new Promise(async (resolve, reject) => {
-        Order.findOne({ "orders._id": new ObjectId(orderId) }).then((orders) => {
-          const order = orders.orders.find((order) => order._id == orderId);
-  
-          if (status == 'Return Declined') {
+          if(status == 'Cancel Accepted'){
+            console.log('waaalet');
+            Order.updateOne(
+              { "orders._id": new ObjectId(orderId) },
+              {
+                $set: {
+                  "orders.$.cancelStatus": status,
+                  "orders.$.orderStatus": status,
+                  "orders.$.paymentStatus": "Refund Credited to Wallet"
+                }
+              }
+            ).then(async (response) => {
+              const user = await User.findOne({ _id: userId});
+              user.wallet += parseInt(order.totalPrice);
+              await user.save();
+              resolve(response);
+            });
+
+          }else if(status == 'Cancel Declined'){
             Order.updateOne(
               { "orders._id": new ObjectId(orderId) },
               {
@@ -131,6 +116,36 @@ const getAllOrder  = () => {
                   "orders.$.orderStatus": status,
                   "orders.$.paymentStatus": "No Refund"
                 }
+              }
+            ).then((response) => {
+              resolve(response);
+            });
+          }
+
+        }
+        });
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const returnOrder = async (orderId,userId,status) => {
+    try {
+      return new Promise(async (resolve, reject) => {
+        Order.findOne({ "orders._id": new ObjectId(orderId) }).then((orders) => {
+          const order = orders.orders.find((order) => order._id == orderId);
+       
+          if(order.paymentMethod == 'cod'){
+          if (status == 'Return Declined') {
+            Order.updateOne(
+              { "orders._id": new ObjectId(orderId) },
+              {
+                $set: {
+                  "orders.$.cancelStatus": status,
+                  "orders.$.orderStatus": status,
+                  "orders.$.paymentStatus": "No Refund"
+                } 
               }
             ).then((response) => {
               resolve(response);
@@ -145,17 +160,110 @@ const getAllOrder  = () => {
                   "orders.$.paymentStatus": "Refund Credited to Wallet"
                 }
               }
-            ).then((response) => {
+            ).then(async (response) => {
+              const user = await User.findOne({ _id: userId});
+              user.wallet += parseInt(order.totalPrice);
+              await user.save();
               resolve(response);
             });
 
           }
+        }else if(order.paymentMethod=='wallet'){
+          if(status == 'Return Accepted'){
+            Order.updateOne(
+              { "orders._id": new ObjectId(orderId) },
+              {
+                $set: {
+                  "orders.$.cancelStatus": status,
+                  "orders.$.orderStatus": status,
+                  "orders.$.paymentStatus": "Refund Credited to Wallet"
+                }
+              }
+            ).then(async (response) => {
+              const user = await User.findOne({ _id: userId});
+              user.wallet += parseInt(order.totalPrice);
+              await user.save();
+              resolve(response);
+            });
+
+          }else if(status == 'Return Declined'){
+            Order.updateOne(
+              { "orders._id": new ObjectId(orderId) },
+              {
+                $set: {
+                  "orders.$.cancelStatus": status,
+                  "orders.$.orderStatus": status,
+                  "orders.$.paymentStatus": "No Refund"
+                }
+              }
+            ).then((response) => {
+              resolve(response);
+            });
+          }
+        }
         });
       });
     } catch (error) {
       console.log(error.message);
     }
   };
+
+  const getSalesReport =  () => {
+    try {
+      return new Promise((resolve, reject) => {
+        Order.aggregate([
+          {
+            $unwind: "$orders",
+          },
+          // {
+          //   $match: {
+          //     "orders.orderConfirm": "delivered",
+          //   },
+          // },
+        ]).then((response) => {
+          resolve(response);
+        });
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+
+  const postReport = (date) => {
+    console.log(date, "date+++++");
+    try {
+      let start = new Date(date.startdate);
+      let end = new Date(date.enddate);
+      return new Promise((resolve, reject) => {
+        Order.aggregate([
+          {
+            $unwind: "$orders",
+          },
+          {
+            $match: {
+              $and: [
+                { "orders.orderStatus": "Delivered" },
+                {
+                  "orders.createdAt": {
+                    $gte: start,
+                    $lte: new Date(end.getTime() + 86400000),
+                  },
+                },
+              ],
+            },
+          },
+        ])
+          .exec()
+          .then((response) => {
+            console.log(response, "response---");
+            resolve(response);
+          });
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
   
 
   module.exports = {
@@ -163,5 +271,7 @@ const getAllOrder  = () => {
     findOrder,
     changeOrderStatus,
     cancelOrder,
-    returnOrder
+    returnOrder,
+    getSalesReport,
+    postReport
   }

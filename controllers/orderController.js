@@ -3,6 +3,7 @@ const Cart = require('../models/cartModel');
 const orderHelper = require('../helpers/orderHelper')
 const Order = require('../models/orderModel');
 const { ObjectId } = require("mongodb");
+const couponHelper = require('../helpers/couponHelper')
 
 
 const checkOut = async (req,res)=>{
@@ -49,7 +50,6 @@ const changePrimary = async (req, res) => {
   try {
     const userId = res.locals.user._id
     const result = req.body.addressRadio;
-    console.log(result)
     const user = await Address.find({ user: userId.toString() });
 
     const addressIndex = user[0].addresses.findIndex((address) =>
@@ -76,28 +76,25 @@ const changePrimary = async (req, res) => {
 const postCheckOut  = async (req, res) => {
   console.log(req.body, "body");
   try {
-    let userId = res.locals.user;
-    let data = req.body;
-    let total = data.total;
-    // let couponCode = data.couponCode;
-    // console.log(total, couponCode, "---------");
-    // await couponHelpers.addCouponToUser(couponCode, userId);
+    const userId = res.locals.user;
+    const data = req.body;
+    const couponCode = data.couponCode
+    // await couponHelper.addCouponToUser(couponCode, userId);
+
+
     try {
       const response = await orderHelper.placeOrder(data,userId);
-      // console.log(response, "response");
-      if (data.paymentOption === "cod") {
-        res.json({ codStatus: true });}
-      // } else if (data.payment_option === "razorpay") {
-      //   const order = await orderHelpers.generateRazorpay(
-      //     req.session.user._id,
-      //     total
-      //   );
-      //   console.log(order, ";;");
-      //   res.json(order);
-      // } else if (data.payment_option === "wallet") {
-      //   res.json({ orderStatus: true, message: "order placed successfully" });
-      // }
-      // res.redirect("/orderDetails")
+      if (data.paymentOption === "cod") { 
+        res.json({ codStatus: true });
+      } 
+        else if (data.paymentOption === "wallet") {
+          res.json({ orderStatus: true, message: "order placed successfully" });
+      }else if (data.paymentOption === "razorpay") {
+        const order = await orderHelper.generateRazorpay(userId._id,data.total);
+        console.log("ORDERRAZOR"+order);
+        res.json(order);
+      }
+
     } catch (error) {
       console.log("got here ----");
       console.log({ error: error.message }, "22");
@@ -113,11 +110,9 @@ const orderDetails = async (req,res)=>{
   try {
     const user = res.locals.user
     const id = req.query.id
-    console.log(id);
     orderHelper.findOrder(id, user._id).then((orders) => {
       const address = orders[0].shippingAddress
       const products = orders[0].productDetails 
-      console.log(products[0].productName)
       res.render('orderDetails',{orders,address,products})
     });
 
@@ -136,8 +131,16 @@ const orderDetails = async (req,res)=>{
 const orderList  = async(req,res)=>{
   try {
     const user  = res.locals.user
-    const order = await Order.findOne({user:user._id})
-    res.render('orderList',{order:order.orders})
+    // const order = await Order.findOne({user:user._id})
+    const order = await Order.aggregate([
+      {$match:{user:user._id}},
+      { $unwind: "$orders" },
+      { $sort: { "orders.createdAt": -1 } },
+    ])
+    res.render('orderList',{order})
+
+    
+   
   } catch (error) {
     
   }
@@ -146,15 +149,59 @@ const orderList  = async(req,res)=>{
 }
 
 const cancelOrder = async(req,res)=>{
-  let orderId = req.body.orderId
-  let status = req.body.status
-  console.log(orderId)
+  const orderId = req.body.orderId
+  const status = req.body.status
   orderHelper.cancelOrder(orderId, status).then((response) => {
     console.log(response);
     res.send(response);
   });
 
 
+}
+
+const verifyCoupon = (req, res) => {
+  let couponCode = req.params.id
+  let userId = res.locals.user._id
+  couponHelper.verifyCoupon(userId, couponCode).then((response) => {
+      res.send(response)
+  })
+}
+
+const applyCoupon =  async (req, res) => {
+  let couponCode = req.params.id 
+  let userId = res.locals.user._id
+  let total = await orderHelper.totalCheckOutAmount(userId) 
+  console.log("totalhelper :"+total);
+  couponHelper.applyCoupon(couponCode, total).then((response) => {
+      res.send(response)
+  }) 
+}
+// const changeOrderStatus = (req, res) => {
+//   let orderId = req.body.orderId;
+//   let status = req.body.status;
+//   orderHelper.changeOrderStatus(orderId, status).then((response) => {
+//     console.log(response);
+//     res.send(response);
+//   });
+// }
+
+const verifyPayment =  (req, res) => {
+  console.log("VERIFYPAYMENT",req.body);
+
+  orderHelper.verifyPayment(req.body).then(() => {
+    orderHelper
+      .changePaymentStatus(res.locals.user._id, req.body.order.receipt)
+      .then(() => {
+        console.log(req.body);
+        res.json({ status: true });
+      })
+      .catch((err) => {
+        res.json({ status: false });
+      });
+  }).catch((err)=>{
+    console.log(err);
+
+  });
 }
 
 
@@ -165,6 +212,9 @@ module.exports = {
     postCheckOut,
     orderDetails,
     orderList,
-    cancelOrder
+    cancelOrder,
+    verifyCoupon,
+    applyCoupon,
+    verifyPayment
 
 }

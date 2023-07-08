@@ -3,7 +3,7 @@ const adminRoute = express()
 const adminController = require('../controllers/adminController')
 const categoryController = require('../controllers/categoryController')
 const productController = require('../controllers/productController')
-const orderController = require('../controllers/orderController')
+const couponController = require('../controllers/couponController')
 
 const multer = require("../multer/multer");
 
@@ -11,6 +11,7 @@ const validate = require('../middleware/adminAuth');
 const session = require('express-session');
 const cookieparser = require('cookie-parser')
 const nocache = require('nocache')
+const adminModel = require('../models/adminModel')
 adminRoute.use(nocache())
 adminRoute.use(session({
     secret: 'your-secret-key',
@@ -70,10 +71,26 @@ adminRoute.post('/updateProduct',multer.upload,productController.updateProduct)
 adminRoute.get('/orderList',validate.requireAuth,adminController.orderList)
 
 adminRoute.get('/orderDetails',validate.requireAuth,adminController.orderDetails)
-adminRoute.put('/orderStatus',adminController.changeStatus)
+adminRoute.put('/orderStatus',adminController.changeStatus)  
 adminRoute.put('/cancelOrder',adminController.cancelOrder)
 adminRoute.put('/returnOrder',adminController.returnOrder)
 
+
+//coupon
+
+adminRoute.get('/addCoupon',couponController.loadCouponAdd)
+adminRoute.post('/addCoupon',couponController.addCoupon)
+adminRoute.get('/generate-coupon-code',couponController.generateCouponCode)
+adminRoute.get('/couponList',couponController.couponList)
+
+adminRoute.delete('/removeCoupon',couponController.removeCoupon)
+
+
+
+//salesReport
+
+adminRoute.get('/salesReport',adminController.getSalesReport)
+adminRoute.post('/salesReport',adminController.postSalesReport)
 
 adminRoute.get('/logout',adminController.logout)
 module.exports = adminRoute

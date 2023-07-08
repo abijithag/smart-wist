@@ -15,7 +15,7 @@
     <!-- meta character set -->
     <meta charset="UTF-8">
     <!-- Site Title -->
-    <title>Karma Shop</title>
+    <title>Smart Wrist</title>
 
     <!--
             CSS
@@ -281,21 +281,14 @@
                                         <li class="nav-item">
                                             <a class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab" aria-controls="dashboard" aria-selected="false"><i class="fi-rs-settings-sliders mr-10"></i>Dashboard</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="orders-tab" data-bs-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false"><i class="fi-rs-shopping-bag mr-10"></i>Orders</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="track-orders-tab" data-bs-toggle="tab" href="#track-orders" role="tab" aria-controls="track-orders" aria-selected="false"><i class="fi-rs-shopping-cart-check mr-10"></i>Track Your Order</a>
-                                        </li>
+                                        
                                         <li class="nav-item">
                                             <a class="nav-link" id="address-tab" data-bs-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="true"><i class="fi-rs-marker mr-10"></i>My Address</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="true"><i class="fi-rs-user mr-10"></i>Address</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="page-login-register.html"><i class="fi-rs-sign-out mr-10"></i>Logout</a>
-                                        </li>
+                                        
                                     </ul>
                                 </div>
                             </div>
@@ -313,8 +306,9 @@
                                             <p style="margin: 0;"><strong>Name:</strong> <%=user.fname%> </p>
                                             <p style="margin: 0;"><strong>Email:</strong> <%=user.email%> </p>
                                             <p style="margin: 0;"><strong>Mobile Number:</strong> <%=user.mobile%> </p>
-                                            <a href="#" onclick="openPopup()" style="color: green;">Edit Info</a>
-                                              <a href="#" onclick="openPassPopup()" style="color: green;">Change Password</a>
+                                            <p style="margin: 0; color: #45a049;"><strong>Wallet Balance:</strong>₹ <%=user.wallet%> </p>
+                                            <a href="#" onclick="openPopup()" style="color: rgb(0, 0, 0);">Edit Info</a>
+                                              <a href="#" onclick="openPassPopup()" style="color: rgb(0, 0, 0);">Change Password</a>
                                           </div>
                                         </div>
                                       </div>
@@ -365,7 +359,7 @@
                                                   <%= address.mobileNumber %><br>
                                                  
                                                 </address>
-                                                <a href="#" class="btn-small edit-address" onclick="openEditForm(this, <%= JSON.stringify(address) %>)" >Edit</a><br>
+                                                <a href="#" class="btn-small edit-address" onclick="openEditForm(this, '<%= JSON.stringify(address)%>')" >Edit</a><br>
                                                 <a href="/deleteAddress?id=<%=address._id%>">Delete</a>
                                               </div>
                                             </div>
@@ -460,6 +454,7 @@
             </div>
         </section>
     </main>
+    <%- include('../layouts/footer.ejs') %>	
 
  
     <!-- Preloader Start -->

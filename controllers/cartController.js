@@ -17,50 +17,7 @@ const addToCart = (req,res)=>{
     }
 }
 
-// const loadCart = async ( req, res ) => {
-//     try{
-      
-      
-//       const user = res.locals.user;
-//       let count = await cartHelper.getCartCount(user.id);
-//       let total = await Cart.findOne({user:user.id})
-//       const cartTotal = total.cartTotal
 
-//       const cart = await Cart.aggregate([
-//         { $match: { user: user.id } },
-//         {
-//           $unwind: "$cartItems"
-//         },{
-//           $project:{
-//             item: "$cartItems.productId",
-//                 quantity: "$cartItems.quantity",
-//                 total:"$cartItems.total"
-//           }
-//         },
-//         {
-//           $lookup: {
-//                 from: "products",
-//                 localField: "item",
-//                 foreignField: "_id",
-//                 as: "carted"
-//               }
-//         },
-//          {
-//           $project: {
-//             "item": 1,
-//             "quantity": 1, 
-//             "total":1,
-//             "carted": { $arrayElemAt: ["$carted", 0] },
-//           },
-//         }, 
-//       ]);
-//       res.render('cart', {cart:cart ,user,count,cartTotal});
-//     }
-//     catch(error){
-//         console.log(error);
-//         res.send({ success: false, error: error.message });
-//     }
-// }
 const loadCart = async (req, res) => {
   try {
     const user = res.locals.user;
@@ -110,7 +67,7 @@ const loadCart = async (req, res) => {
 
 const updateQuantity = (req, res) => {
 
-  let userId = res.locals.user._id;
+  const userId = res.locals.user._id;
 
   cartHelper.updateQuantity(req.body).then(async (response) => {
     res.json(response);

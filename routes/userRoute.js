@@ -83,8 +83,8 @@ userRoute.post('/editInfo',userController.editInfo)
 
 
 //checkout
-userRoute.get('/checkOut',orderController.checkOut)
-userRoute.post('/checkOut',orderController.postCheckOut)
+userRoute.get('/checkOut',block.checkBlocked,validate.requireAuth,orderController.checkOut)
+userRoute.post('/checkOut',block.checkBlocked,validate.requireAuth,orderController.postCheckOut)
 userRoute.post('/checkOutAddress',profileController.checkOutAddress)
 
 
@@ -92,7 +92,13 @@ userRoute.post('/changeDefaultAddress',orderController.changePrimary)
 userRoute.get('/deleteAddress',profileController.deleteAddress)
 userRoute.get('/orderDetails',orderController.orderDetails)
 
-userRoute.get('/orderList',orderController.orderList)
+userRoute.get('/orderList',block.checkBlocked,validate.requireAuth,orderController.orderList)
 
-userRoute.put('/cancelOrder',orderController.cancelOrder)
-module.exports = userRoute
+userRoute.put('/cancelOrder',orderController.cancelOrder)   
+
+userRoute.get('/applyCoupon/:id',orderController.applyCoupon)
+userRoute.get('/couponVerify/:id',orderController.verifyCoupon)
+
+userRoute.post('/verifyPayment',orderController.verifyPayment)  
+
+module.exports = userRoute 

@@ -132,22 +132,32 @@
                                 <!-- <div class="col-md-3">
                                     <h6>4. Media</h6>
                                 </div> -->
+                                <!-- <div class="col-md-9">
+                                    <div class="mb-4">
+                                        <label class="form-label">Main Image</label>
+                                        <input class="form-control" type="file"  name="images">
+                                    </div>
+                                </div> -->
                                 <div class="col-md-9">
                                     <div class="mb-4">
                                         <label class="form-label">Main Image</label>
-                                        <input class="form-control" type="file" value="<%=product.images[0]%>" name="images">
+                                        <img src="../product-images/<%= product.images[0]%>" id="imgView1" alt="g">
+
+                                        <input class="form-control" type="file"  onchange="viewImage1(event)"  name="images">
                                     </div>
                                 </div>
+                              
+                                
                                 <div class="col-md-9">
                                     <div class="mb-4">
                                         <label class="form-label">Second Image</label>
-                                        <input class="form-control" type="file" value="<%=product.images[1]%>" name="images">
+                                        <input class="form-control" type="file"  name="images">
                                     </div>
                                 </div>
                                 <div class="col-md-9">
                                     <div class="mb-4">
                                         <label class="form-label">Third Image</label>
-                                        <input class="form-control" type="file" name="images" value="<%=product.images[2]%>">
+                                        <input class="form-control" type="file" name="images">
                                     </div>
                                 </div> <!-- col.// -->
                             </div> <!-- .row end// -->
@@ -182,7 +192,11 @@
     <!-- Main Script -->
     <script src="../admin-assets/js/main.js" type="text/javascript"></script>
 </body>
-
+<script>
+function viewImage1(event) {
+      document.getElementById('imgView1').src = URL.createObjectURL(event.target.files[0])
+    }
+</script>
 
 <!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-form-product-2.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:32 GMT -->
 </html>

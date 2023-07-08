@@ -1,10 +1,6 @@
 const Admin = require('../models/adminModel')
 const User = require('../models/userModel')
-// const path = require('path');
-// const Product = require('../models/productModel')
-// const Category = require('../models/categoryModel')
 const jwt = require('jsonwebtoken');
-// const multer = require('multer');
 const adminHelper = require('../helpers/adminHelper');
 const { response } = require('../routes/userRoute');
 const Order = require('../models/orderModel');
@@ -21,7 +17,11 @@ const createToken = (id) => {
 
 const loadLogin = async(req,res)=>{
     try {
+      if(res.locals.admin!=null){
+        res.redirect('/admin/category')
+    }else{
         res.render('login')
+    }
     } catch (error) {
         console.log(error.message)
     }
@@ -36,7 +36,6 @@ const verifyLogin = async(req,res)=>{
 
 
         if(adminData.password === password){
-            // const passwordMatch = await bcrypt.compare(password,userData.password)
             if(adminData){
                 const token = createToken(adminData._id);
                 res.cookie('jwtAdmin', token, { httpOnly: true, maxAge: maxAge * 1000 });
@@ -65,13 +64,12 @@ const loadDashboard = async(req,res)=>{
 
 
 
-// Create a new category
 
 
 const loadUsers = async(req,res)=>{
   try {
-const page = parseInt(req.query.page) || 1; // Current page number
-const pageSize = parseInt(req.query.pageSize) || 5; // Number of items per page
+const page = parseInt(req.query.page) || 1; 
+const pageSize = parseInt(req.query.pageSize) || 5; 
 const skip = (page - 1) * pageSize;
 const totalCount = await User.countDocuments({});
 const totalPages = Math.ceil(totalCount / pageSize);
@@ -157,26 +155,10 @@ const unBlockUser = async(req,res)=>{
     console.log(error.message)
   }
 }
-
-// const orderList = async(req,res)=>{
-//     try {
-//         const orders = await Order.aggregate([
-//             { $unwind: "$orders" },
-//             { $sort: { 'orders.createdAt' : -1 } },
-//           ])
-//         res.render('orderList',{orders})          
-//     } catch (error) {
-//         console.log(error.message)
-        
-//     }
-// }
-
-
-
 const orderList = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1; // Current page number, default is 1
-    const limit = parseInt(req.query.limit) || 5; // Number of items per page, default is 10
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10; 
 
     const totalOrders = await Order.aggregate([
       { $unwind: "$orders" },
@@ -184,8 +166,6 @@ const orderList = async (req, res) => {
     ]);
     const count = totalOrders.length > 0 ? totalOrders[0].count : 0;
     const totalPages = Math.ceil(count / limit);
-    console.log(totalPages);
-
     const skip = (page - 1) * limit;
 
     const orders = await Order.aggregate([
@@ -241,10 +221,12 @@ const changeStatus = async(req,res)=>{
 }
 
 const cancelOrder = async(req,res)=>{
+  const userId = req.body.userId
+
   const orderId = req.body.orderId
   const status = req.body.status
 
-  adminHelper.cancelOrder(orderId,status).then((response) => {
+  adminHelper.cancelOrder(orderId,userId,status).then((response) => {
     res.send(response);
   });
 
@@ -252,11 +234,59 @@ const cancelOrder = async(req,res)=>{
 const returnOrder = async(req,res)=>{
   const orderId = req.body.orderId
   const status = req.body.status
+  const userId = req.body.userId
 
-  adminHelper.returnOrder(orderId,status).then((response) => {
+
+  adminHelper.returnOrder(orderId,userId,status).then((response) => {
     res.send(response);
   });
 
+}
+
+
+const getSalesReport =  async (req, res) => {
+  let report = await adminHelper.getSalesReport();
+  let details = [];
+  const getDate = (date) => {
+    let orderDate = new Date(date);
+    let day = orderDate.getDate();
+    let month = orderDate.getMonth() + 1;
+    let year = orderDate.getFullYear();
+    return `${isNaN(day) ? "00" : day} - ${isNaN(month) ? "00" : month} - ${
+      isNaN(year) ? "0000" : year
+    }`;
+  };
+
+  report.forEach((orders) => {
+    details.push(orders.orders);
+  });
+
+  res.render('salesReport',{details,getDate})
+
+  
+}
+
+const postSalesReport =  (req, res) => {
+  let admin = req.session.admin;
+  let details = [];
+  const getDate = (date) => {
+    let orderDate = new Date(date);
+    let day = orderDate.getDate();
+    let month = orderDate.getMonth() + 1;
+    let year = orderDate.getFullYear();
+    return `${isNaN(day) ? "00" : day} - ${isNaN(month) ? "00" : month} - ${
+      isNaN(year) ? "0000" : year
+    }`;
+  };
+
+  adminHelper.postReport(req.body).then((orderData) => {
+    console.log(orderData, "orderData");
+    orderData.forEach((orders) => {
+      details.push(orders.orders);
+    });
+    console.log(details, "details");
+    res.render("salesReport", {details,getDate});
+  });
 }
 
 
@@ -276,5 +306,7 @@ module.exports = {
     orderDetails,
     changeStatus,
     cancelOrder,
-    returnOrder
+    returnOrder,
+    getSalesReport,
+    postSalesReport
 }
