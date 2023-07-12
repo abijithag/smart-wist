@@ -20,7 +20,7 @@ const placeOrder = (data,user)=>{
             const productDetails = await Cart.aggregate([
               {
                 $match: {
-                  user: user._id.toString(),
+                  user: user.toString(),
                 },
               },
               {
@@ -55,7 +55,7 @@ const placeOrder = (data,user)=>{
             ]);
             const addressData = await Address.aggregate([
                 {
-                  $match: { user: user._id.toString() },
+                  $match: { user: user.toString() },
                 },
                 {
                   $unwind: "$addresses",
@@ -72,7 +72,7 @@ const placeOrder = (data,user)=>{
               if(data.paymentOption == 'cod'){
                 (status = "Suceess"), (orderStatus = "Placed");
               }else if (data.paymentOption === "wallet") {
-                const userData = await User.findById({ _id:user._id });
+                const userData = await User.findById({ _id:user });
                 if (userData.wallet < data.total) {
                   flag = 1;
                   reject(new Error("Insufficient wallet balance!"));
@@ -99,10 +99,10 @@ const placeOrder = (data,user)=>{
                 cancelStatus:'false',
                 createdAt:new Date()
               };
-              const order = await Order.findOne({ user:user._id  });
+              const order = await Order.findOne({ user:user  });
               if (order) {
                 await Order.updateOne(
-                  { user: user._id },
+                  { user: user },
                   {
                     $push: { orders: orderData },
                   }
@@ -111,16 +111,14 @@ const placeOrder = (data,user)=>{
                 });
               } else {
                 const newOrder = Order({
-                  user: user._id,
+                  user: user,
                   orders: orderData,
                 });
                 await newOrder.save().then((response) => {
                     resolve(response);
                   });
                 }
-                await Cart.deleteOne({ user:user._id  }).then(() => {
-                    resolve();
-                });
+             
 
 
 
@@ -310,6 +308,32 @@ const changePaymentStatus =  (userId, orderId) => {
   }
 }
 
+const getOrderList = (page, limit) => {
+  return new Promise((resolve, reject) => {
+    Order.aggregate([
+      { $unwind: "$orders" },
+      { $group: { _id: null, count: { $sum: 1 } } },
+    ])
+      .then((totalOrders) => {
+        const count = totalOrders.length > 0 ? totalOrders[0].count : 0;
+        const totalPages = Math.ceil(count / limit);
+        const skip = (page - 1) * limit;
+
+        Order.aggregate([
+          { $unwind: "$orders" },
+          { $sort: { "orders.createdAt": -1 } },
+          { $skip: skip },
+          { $limit: limit },
+        ])
+          .then((orders) => {
+            resolve({ orders, totalPages, page, limit });
+          })
+          .catch((error) => reject(error));
+      })
+      .catch((error) => reject(error));
+  });
+};
+
 
 
 module.exports = {
@@ -319,6 +343,7 @@ module.exports = {
     totalCheckOutAmount,
     generateRazorpay,
     verifyPayment,
-    changePaymentStatus
+    changePaymentStatus,
+    getOrderList
 
 }

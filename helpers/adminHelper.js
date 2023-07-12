@@ -86,11 +86,10 @@ const getAllOrder  = () => {
               resolve(response);
             });
           }
-        }else if(order.paymentMethod=='wallet'){
+        }else if(order.paymentMethod=='wallet'||order.paymentMethod=='razorpay'){
                     console.log(status);
 
           if(status == 'Cancel Accepted'){
-            console.log('waaalet');
             Order.updateOne(
               { "orders._id": new ObjectId(orderId) },
               {
@@ -168,7 +167,7 @@ const getAllOrder  = () => {
             });
 
           }
-        }else if(order.paymentMethod=='wallet'){
+        }else if(order.paymentMethod=='wallet'||order.paymentMethod=='razorpay'){
           if(status == 'Return Accepted'){
             Order.updateOne(
               { "orders._id": new ObjectId(orderId) },
@@ -233,8 +232,8 @@ const getAllOrder  = () => {
   const postReport = (date) => {
     console.log(date, "date+++++");
     try {
-      let start = new Date(date.startdate);
-      let end = new Date(date.enddate);
+      const start = new Date(date.startdate);
+      const end = new Date(date.enddate);
       return new Promise((resolve, reject) => {
         Order.aggregate([
           {
@@ -264,6 +263,34 @@ const getAllOrder  = () => {
       console.log(error.message);
     }
   }
+
+  const getOnlineCount =  () => {
+    return new Promise(async (resolve, reject) => {
+      const response = await Order.aggregate([
+        {
+          $unwind: "$orders",
+        },
+        {
+          $match: {
+            "orders.paymentMethod": "razorpay",
+            "orders.orderStatus": "Delivered" 
+
+          },
+        },
+        {
+          $group:{
+            _id: null,
+          totalPriceSum: { $sum: { $toInt: "$orders.totalPrice" } },
+          count: { $sum: 1 }
+
+          }
+
+        }
+
+      ]);
+      resolve(response);
+    });
+  }
   
 
   module.exports = {
@@ -273,5 +300,6 @@ const getAllOrder  = () => {
     cancelOrder,
     returnOrder,
     getSalesReport,
-    postReport
+    postReport,
+    getOnlineCount
   }

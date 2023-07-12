@@ -18,6 +18,10 @@
     <!-- Template CSS -->
     <link href="../admin-assets/css/main.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
     
 </head>
 
@@ -146,7 +150,7 @@
 
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover" id="myTable">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -198,7 +202,7 @@
                     </table> <!-- table-responsive.// -->
                 </div>
             </div> <!-- card-body end// -->
-        </div> <!-- card en
+        </div> 
 
             
 
@@ -239,19 +243,7 @@
 
 
 
-            <div class="pagination-area mt-30 mb-50">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-start">
-                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                        <li class="page-item"><a class="page-link" href="#">02</a></li>
-                        <li class="page-item"><a class="page-link" href="#">03</a></li>
-                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                        <li class="page-item"><a class="page-link" href="#">16</a></li>
-                        <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
-                    </ul>
-                </nav>
-            </div>
-        </section> <!-- content-main end// -->
+
         <footer class="main-footer font-xs">
             <div class="row pb-30 pt-15">
                 <div class="col-sm-6">
@@ -261,7 +253,9 @@
                 </div>
             </div>
         </footer>
+
     </main>
+
     <script src="../admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="../admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="../admin-assets/js/vendors/select2.min.js"></script>

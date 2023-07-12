@@ -57,3 +57,95 @@
                         class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
                 </div>
             </td>
+
+
+ <script>
+         var mainImageInput = document.getElementById('main-image-input');
+        var mainImageContainer = document.getElementById('main-image-container');
+        var mainImageCropBtn = document.getElementById('crop-main-image');
+        var mainImageCropper;
+        var mainImageCroppedInput = document.getElementById('main-image-input');
+
+        mainImageInput.addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function(event) {
+                mainImageContainer.innerHTML = '<img src="' + event.target.result + '">';
+                mainImageCropper = new Cropper(mainImageContainer.firstChild, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                });
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        mainImageCropBtn.addEventListener('click', function() {
+            var croppedImage = mainImageCropper.getCroppedCanvas().toDataURL('image/jpeg');
+            mainImageCroppedInput.value = croppedImage;
+            console.log(mainImageCroppedInput.value);
+            // Perform further actions with the cropped image and input field
+        });
+
+        // Second Image
+        var secondImageInput = document.getElementById('second-image-input');
+        var secondImageContainer = document.getElementById('second-image-container');
+        var secondImageCropBtn = document.getElementById('crop-second-image');
+        var secondImageCropper;
+        var secondImageCroppedInput = document.getElementById('second-image-input');
+
+        secondImageInput.addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function(event) {
+                secondImageContainer.innerHTML = '<img src="' + event.target.result + '">';
+                secondImageCropper = new Cropper(secondImageContainer.firstChild, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                });
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        secondImageCropBtn.addEventListener('click', function() {
+            var croppedImage = secondImageCropper.getCroppedCanvas().toDataURL('image/jpeg');
+            secondImageCroppedInput.value = croppedImage;
+            console.log(secondImageCroppedInput.value);
+            // Perform further actions with the cropped image and input field
+        });
+
+        // Third Image
+        var thirdImageInput = document.getElementById('third-image-input');
+        var thirdImageContainer = document.getElementById('third-image-container');
+        var thirdImageCropBtn = document.getElementById('crop-third-image');
+        var thirdImageCropper;
+        var thirdImageCroppedInput = document.getElementById('third-image-input');
+
+        thirdImageInput.addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function(event) {
+                thirdImageContainer.innerHTML = '<img src="' + event.target.result + '">';
+                thirdImageCropper = new Cropper(thirdImageContainer.firstChild, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                });
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        thirdImageCropBtn.addEventListener('click', function() {
+            var croppedImage = thirdImageCropper.getCroppedCanvas().toDataURL('image/jpeg');
+            thirdImageCroppedInput.value = croppedImage;
+            console.log(thirdImageCroppedInput.value);
+            // Perform further actions with the cropped image and input field
+        });
+    </script>

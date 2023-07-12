@@ -5,7 +5,25 @@ const profiletHelper = require("../helpers/profileHelper");
 const Order = require('../models/orderModel');
 
 
+const loadDashboard = async(req,res)=>{
+  try {
+    res.render('dashboard')
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 const profile = async (req, res) => {
+  try {
+    let arr = []
+    const user = res.locals.user;
+    res.render("profileDetails", { user, arr });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const profileAdress = async (req, res) => {
   try {
     let arr = []
     const user = res.locals.user;
@@ -14,9 +32,7 @@ const profile = async (req, res) => {
       const ad = address.forEach((x) => {
         return (arr = x.addresses);
       });
-      res.render("profile", { user, arr });
-    }else{
-      res.render("profile", { user, arr });
+      res.render("profileAdress", { user, arr });
     }
     
   } catch (error) {
@@ -111,7 +127,7 @@ const deleteAddress = async (req, res) => {
     { $pull: { addresses: { _id: addId } } }
   );
 
-  res.redirect("/profile");
+  res.redirect("/profileAddress");
 };
 
 const checkOutAddress = async (req, res) => {
@@ -158,6 +174,8 @@ module.exports = {
   submitAddress,
   editAddress,
   deleteAddress,
-  checkOutAddress
+  checkOutAddress,
+  loadDashboard,
+  profileAdress
   
 };

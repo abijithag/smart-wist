@@ -33,7 +33,10 @@
 	<link rel="stylesheet" href="../user-assets/css/nouislider.min.css">
 	<link rel="stylesheet" href="../user-assets/css/bootstrap.css">
 	<link rel="stylesheet" href="../user-assets/css/main.css">
-</head>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.min.js"></script>
+	</head>
 
 <body>
 
@@ -43,19 +46,7 @@
 	<!-- End Header Area -->
 
 	<!-- Start Banner Area -->
-	<section class="banner-area organic-breadcrumb">
-		<div class="container">
-			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
-				<div class="col-first">
-					<h1>Register</h1>
-					<nav class="d-flex align-items-center">
-						<a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-						<a href="category.html">Register</a>
-					</nav>
-				</div>
-			</div>
-		</div>
-	</section>
+
 	<!-- End Banner Area -->
 
 	<!--================Register Box Area =================-->
@@ -64,28 +55,38 @@
 				<div class="col-lg-12">
 					<div class="login_form_inner">
 						<h3>Register</h3>
-						<form class="row login_form" action="" method="post" id="contactForm" novalidate="novalidate">
+						<form class="row login_form" id="signup" method="post" novalidate="novalidate">
               <div class="col-md-12 form-group">
-								<input type="text" class="form-control" id="name" name="fname" placeholder="First Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'First Name'">
-							</div>
-              <div class="col-md-12 form-group">
-								<input type="text" class="form-control" id="name" name="lname" placeholder="Last Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Last Name'">
-							</div>
-							<div class="col-md-12 form-group">
-								<input type="text" class="form-control" id="name" name="email" placeholder="Email ID" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
+								<input type="text" class="form-control" id="fname" name="fname" placeholder="First Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'First Name'">
+								<p id="err" class="text-danger"></p>
 							</div>
               <div class="col-md-12 form-group">
-								<input type="number" class="form-control" id="name" name="mno" placeholder="Mobile Number" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Mobile'">
+								<input type="text" class="form-control" id="lname" name="lname" placeholder="Last Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Last Name'">
+								<p id="err" class="text-danger"></p>
+
 							</div>
 							<div class="col-md-12 form-group">
-								<input type="password" class="form-control" id="name" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+								<input type="text" class="form-control" id="email" name="email" placeholder="Email ID" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
+								<p id="err" class="text-danger"></p>
+
+							</div>
+              <div class="col-md-12 form-group">
+								<input type="number" class="form-control" id="mno" name="mno" placeholder="Mobile Number" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Mobile'">
+								<p id="err" class="text-danger"></p>
+
 							</div>
 							<div class="col-md-12 form-group">
-								<input type="password" class="form-control" id="name" name="confPassword" placeholder="Confirm Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Confirm Password'">
+								<input type="password" class="form-control" id="password" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+								<p id="err" class="text-danger"></p>
+
+							</div>
+							<div class="col-md-12 form-group">
+								<input type="password" class="form-control" id="confPassword" name="confPassword" placeholder="Confirm Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Confirm Password'">
+								<p id="err" class="text-danger"></p>
 							</div>
 						
 							<div class="col-md-12 form-group">
-								<button type="submit" value="submit" class="primary-btn">Register</button>
+								<button type="submit" value="submit" class="primary-btn" >Register</button>
 							
 							</div>
 						</form>
@@ -117,6 +118,153 @@
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
 	<script src="../user-assets/js/gmaps.min.js"></script>
 	<script src="../user-assets/js/main.js"></script>
+
+
+
+
+
+
+
+
+	<!-- <script>
+
+		function validate()
+		{
+			event.preventDefault();
+
+		 const fname = document.getElementById('fname')
+		 const lname = document.getElementById('lname')
+		 const email = document.getElementById('email')
+		 const mobile = document.getElementById('mno')
+		 const password = document.getElementById('password')
+		 const cPassword = document.getElementById('confPassword')
+		 
+		 const fnameValue = fname.value.trim()
+		 const lnameValue = lname.value.trim()
+		 const emailValue = email.value.trim()
+		 const mobileValue = mobile.value.trim()
+		 const passwordValue = password.value.trim()
+		 const cPasswordValue = cPassword.value.trim()
+	 
+		 const error1 = fname.parentElement.querySelector('p')
+		 const error2 = lname.parentElement.querySelector('p')
+		 const error3 = email.parentElement.querySelector('p')
+		 const error4 = mobile.parentElement.querySelector('p')
+		 const error5 = password.parentElement.querySelector('p')
+		 const error6 = password.parentElement.querySelector('p')
+	 
+		 error1.innerText = ''
+		 error2.innerText = ''
+		 error3.innerText = ''
+		 error4.innerText = ''
+		 error5.innerText = ''
+		 error6.innerText = ''
+
+	 
+		 let flag = 1
+		  
+		 // Username Validation
+	 
+		 if(fnameValue == ''){
+		 error1.innerText = 'Field is required'
+		 flag = 2
+		 }
+		 else if(fname.length < 2)
+		 {
+		   error1.innerText = 'Enter a valid Username'
+		   flag = 2
+		 }
+		 else if(!fnameValue.match(/^[a-zA-Z\s]+$/))
+		 {
+		   error1.innerText = 'Enter a valid Username'
+		   flag = 2
+		 }
+	 
+		 // Email Validation 
+	 
+		 if(emailValue == '')
+		 {
+		   error3.innerText = 'Field is required'
+		   flag = 2
+		 }
+		 else if(!emailValue.match(/^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/))
+		 {
+		   error3.innerText = 'Enter a valid Email'
+		   flag = 2
+		 }
+		 
+		 // Mobile Number Validation
+	 
+		 if(mobileValue == '')
+		 {
+		   error4.innerText = 'Field is required'
+		   flag = 2
+		 }
+		 else if(mobileValue < 10)
+		 {
+		   error4.innerText = 'Enter a valid Mobile Number'
+		   flag = 2
+		 }
+	 
+		 // Password Validation
+	 
+		 if(passwordValue == '')
+		 {
+		   error5.innerText = 'Field is required'
+		   flag = 2
+		 }
+		 else if(passwordValue.length < 6)
+		 {
+		   error5.innerText = 'Enter a valid Password'
+		   flag = 2
+		 }
+		 else if (!passwordValue.match(/^.{8,}$/)) {
+			   error5.innerText = "Password min-length 8";
+			   flag = 2
+			 }
+	 
+		 // Confirm Password
+	 
+		 if(cPasswordValue == '')
+		 {
+		   error6.innerText = 'Field is required'
+		   flag = 2
+		 }
+		 else if(cPasswordValue != passwordValue)
+		 {
+		   error6.innerText = 'Enter a valid Password'
+		   flag = 2
+		 }
+	 
+		 if (flag === 1) {
+			console.log('HIHIHI');
+  // Perform the necessary actions for loading a new route using a post method
+  // For example, you can use the fetch API to send a POST request to the desired route
+  fetch('/register', {
+    method: 'POST',
+    body: JSON.stringify({
+      fname: fnameValue,
+      lname: lnameValue,
+      email: emailValue,
+      mno: mobileValue,
+      password: passwordValue,
+      confPassword: cPasswordValue
+    }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })  .then(() => {
+    // Request sent successfully, you can perform further actions if needed
+  })
+}
+		}
+	 
+
+
+
+
+
+	   </script> -->
 </body>
 
 </html>

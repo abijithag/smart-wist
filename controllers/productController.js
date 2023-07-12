@@ -87,9 +87,13 @@ const loadProducts = async(req,res)=>{
  
   const updateProduct = async (req, res) => {
     try {
+      const productData = await Product.findById(req.body.id);
+      console.log(req.body._id);
+
       const categories = await Category.find({})
         const images = req.files.map(file => file.filename);
-        await productHelper.updateProduct(req.body,images)
+        const updatedImages = images.length > 0 ? images : productData.images;
+        await productHelper.updateProduct(req.body,updatedImages)
         res.redirect('/admin/displayProduct');
     } catch (error) {
       console.log(error.message);

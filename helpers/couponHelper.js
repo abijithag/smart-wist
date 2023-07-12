@@ -76,7 +76,7 @@ const generatorCouponCode =  () => {
             if (couponExist.length>0) {
               console.log(couponExist);
               if (new Date(couponExist[0].validity) - new Date() > 0) {
-                let usersCoupon = await User.findOne({
+                const usersCoupon = await User.findOne({
                   _id: userId,
                   coupons: { $in: [couponCode] },
                 });

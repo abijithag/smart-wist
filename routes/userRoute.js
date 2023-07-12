@@ -34,6 +34,8 @@ userRoute.all('*',validate.checkUser)
 
 userRoute.get('/',userController.homeLoad)
 
+
+
 //register
 userRoute.get('/register',userController.loadRegister)
 userRoute.post('/register',userController.insertUser)
@@ -74,13 +76,13 @@ userRoute.delete("/delete-product-cart",cartController.deleteProduct);
 
 
 //profile
-
-userRoute.get('/profile',block.checkBlocked,validate.requireAuth,profileController.profile)
+userRoute.get('/dashboard',block.checkBlocked,validate.requireAuth,profileController.loadDashboard)
+userRoute.get('/profileDetails',block.checkBlocked,validate.requireAuth,profileController.profile)
 userRoute.post('/submitAddress',profileController.submitAddress)
 userRoute.post('/updateAddress',profileController.editAddress)
 userRoute.post('/editPassword',userController.editPassword)
 userRoute.post('/editInfo',userController.editInfo)
-
+userRoute.get('/profileAddress',profileController.profileAdress)
 
 //checkout
 userRoute.get('/checkOut',block.checkBlocked,validate.requireAuth,orderController.checkOut)
@@ -92,7 +94,8 @@ userRoute.post('/changeDefaultAddress',orderController.changePrimary)
 userRoute.get('/deleteAddress',profileController.deleteAddress)
 userRoute.get('/orderDetails',orderController.orderDetails)
 
-userRoute.get('/orderList',block.checkBlocked,validate.requireAuth,orderController.orderList)
+// userRoute.get('/orderList',block.checkBlocked,validate.requireAuth,orderController.orderList)
+userRoute.get('/profileOrderList',block.checkBlocked,validate.requireAuth,orderController.orderList)
 
 userRoute.put('/cancelOrder',orderController.cancelOrder)   
 

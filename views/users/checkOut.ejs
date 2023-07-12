@@ -359,8 +359,8 @@ function applyCoupon(total) {
                 document.getElementById('couponErr').style.color = '#19ff11'
                 document.getElementById('couponErr').innerText = "Coupon Applied SuccessFully"
                 // document.getElementById('subTotal').innerText = total - response.discountAmount
-                document.getElementById('total').innerText = '₹' + (total - response.discountAmount)
-                document.getElementById('totalVal').value = total - response.discountAmount
+                document.getElementById('total').innerText = '₹' + Math.floor(total - response.discountAmount)
+                document.getElementById('totalVal').value = Math.floor(total - response.discountAmount)
                 document.getElementById('couponOffer').innerText = response.discount + '%'
                 document.getElementById('codes').value = response.couponCode
               } else {
@@ -449,9 +449,9 @@ function applyCoupon(total) {
       "key": "rzp_test_vnJVUHrwVTclxY", // Enter the Key ID generated from the Dashboard
       "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
       "currency": "INR",
-      "name": "ABC Group",
+      "name": "Smart Wrist",
       "description": "Test Transaction",
-      "image": "https://example.com/your_logo",
+      "image": "../images/logo.png",
       "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
       "handler": function(response) {
         console.log(response,'++++++++++',order);
@@ -459,9 +459,9 @@ function applyCoupon(total) {
       },
 
       "prefill": {
-        "name": "Gaurav Kumar",
-        "email": "gaurav.kumar@example.com",
-        "contact": "9000090000"
+        "name": "Vinayak",
+        "email": "vinayak@example.com",
+        "contact": "90000900123"
       },
       "notes": {
         "address": "Razorpay Corporate Office"

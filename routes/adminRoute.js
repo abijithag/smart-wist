@@ -5,6 +5,7 @@ const categoryController = require('../controllers/categoryController')
 const productController = require('../controllers/productController')
 const couponController = require('../controllers/couponController')
 
+
 const multer = require("../multer/multer");
 
 const validate = require('../middleware/adminAuth');
@@ -64,7 +65,7 @@ adminRoute.get('/reListProduct',productController.reListProduct)
 
 
 adminRoute.get('/updateProduct',validate.requireAuth,productController.loadUpdateProduct)
-adminRoute.post('/updateProduct',multer.upload,productController.updateProduct)
+adminRoute.post('/updateProduct',multer.update,productController.updateProduct)
 
 
 //order
@@ -93,4 +94,11 @@ adminRoute.get('/salesReport',adminController.getSalesReport)
 adminRoute.post('/salesReport',adminController.postSalesReport)
 
 adminRoute.get('/logout',adminController.logout)
+
+
+
+
+
+
+
 module.exports = adminRoute

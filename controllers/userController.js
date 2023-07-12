@@ -1,6 +1,7 @@
 const User = require('../models/userModel')
 const Product = require('../models/productModel')
 const Category = require('../models/categoryModel')
+const Banner = require('../models/bannerModel')
 
 const jwt = require('jsonwebtoken');
 require('dotenv').config(); // Module to Load environment variables from .env file
@@ -30,9 +31,11 @@ const securePassword = async(password)=>{
     }
 }
 const homeLoad = async(req,res)=>{
-    try { 
+    try {
+        const banner = await Banner.find({}) 
         const category = await Category.find({ })
-        res.render("home",{user:res.locals.user,category})
+        console.log(banner);
+        res.render("home",{user:res.locals.user,category,banner})
     } catch (error) {
         console.log(error.message);
     }
@@ -72,7 +75,7 @@ const insertUser = async(req,res)=>{
         return res.render("register", { message: "Password Should Contain atleast 8 characters,one number and a special character" });
     }
     console.log(req.body.password)
-    console.log(req.body.confpassword)
+    console.log(req.body.confPassword)
 
 
     if(req.body.password!=req.body.confPassword){
@@ -85,8 +88,10 @@ const insertUser = async(req,res)=>{
     try {
         req.session.otp = otp;
         req.session.userData = req.body;
+
         req.session.mobile = mobileNumber 
-        res.render('verifyOtp')     
+        console.log("before render");
+        res.render('verifyOtp')
     } catch (error) {
         console.log(error.message); 
     }

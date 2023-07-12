@@ -5,6 +5,8 @@ const adminHelper = require('../helpers/adminHelper');
 const { response } = require('../routes/userRoute');
 const Order = require('../models/orderModel');
 const orderHelper = require('../helpers/orderHelper')
+const Product = require('../models/productModel')
+const Category = require('../models/categoryModel')
 
 
 const maxAge = 3 * 24 * 60 * 60;
@@ -14,11 +16,108 @@ const createToken = (id) => {
   });
 };
 
+const loadDashboard = async(req,res)=>{
+  try {
+    const orders = await Order.aggregate([
+      { $unwind: "$orders" },
+      {
+        $match: {
+          "orders.orderStatus": "Delivered"  // Consider only completed orders
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalPriceSum: { $sum: { $toInt: "$orders.totalPrice" } },
+          count: { $sum: 1 }
+        }
+      }
+
+      
+
+
+    ])
+    console.log(orders);
+
+    const salesData = await Order.aggregate([
+      { $unwind: "$orders" },
+      {
+        $match: {
+          "orders.orderStatus": "Delivered"  // Consider only completed orders
+        }
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {  // Group by the date part of createdAt field
+              format: "%Y-%m-%d",
+              date: "$orders.createdAt"
+            }
+          },
+          dailySales: { $sum: { $toInt: "$orders.totalPrice" } }  // Calculate the daily sales
+        } 
+      }, 
+      {
+        $sort: {
+          _id: 1  // Sort the results by date in ascending order
+        }
+      }
+    ])
+
+    const salesCount = await Order.aggregate([
+      { $unwind: "$orders" },
+      {
+        $match: {
+          "orders.orderStatus": "Delivered"  // Consider only completed orders
+        }
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {  // Group by the date part of createdAt field
+              format: "%Y-%m-%d",
+              date: "$orders.createdAt"
+            }
+          },
+          orderCount: { $sum: 1 }  // Calculate the count of orders per date
+        }
+      },
+      {
+        $sort: {
+          _id: 1  // Sort the results by date in ascending order
+        }
+      }
+    ])
+
+
+
+    const categoryCount  = await Category.find({}).count()
+
+    const productsCount  = await Product.find({}).count()
+    const onlinePay = await adminHelper.getOnlineCount()
+
+    const latestorders = await Order.aggregate([
+      {$unwind:"$orders"},
+      {$sort:{
+        'orders.createdAt' :-1
+      }},
+      {$limit:10}
+    ]) 
+
+
+      res.render('dashboard',{orders,productsCount,categoryCount,onlinePay,salesData,order:latestorders,salesCount})
+  } catch (error) {
+      console.log(error)
+  }
+}
+
+
+
 
 const loadLogin = async(req,res)=>{
     try {
       if(res.locals.admin!=null){
-        res.redirect('/admin/category')
+        res.redirect('/admin/dashboard')
     }else{
         res.render('login')
     }
@@ -39,7 +138,7 @@ const verifyLogin = async(req,res)=>{
             if(adminData){
                 const token = createToken(adminData._id);
                 res.cookie('jwtAdmin', token, { httpOnly: true, maxAge: maxAge * 1000 });
-                res.redirect('/admin/category')
+                res.redirect('/admin/dashboard')
             }else{
                 res.render('login',{message:"Email and Password are Incorrect"});
             }
@@ -52,13 +151,7 @@ const verifyLogin = async(req,res)=>{
         console.log(error.message);
     }
 }
-const loadDashboard = async(req,res)=>{
-    try {
-        res.render('dashboard')
-    } catch (error) {
-        console.log(error)
-    }
-}
+
 
 
 
@@ -155,31 +248,31 @@ const unBlockUser = async(req,res)=>{
     console.log(error.message)
   }
 }
-const orderList = async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10; 
+// const orderList = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10; 
 
-    const totalOrders = await Order.aggregate([
-      { $unwind: "$orders" },
-      { $group: { _id: null, count: { $sum: 1 } } },
-    ]);
-    const count = totalOrders.length > 0 ? totalOrders[0].count : 0;
-    const totalPages = Math.ceil(count / limit);
-    const skip = (page - 1) * limit;
+//     const totalOrders = await Order.aggregate([
+//       { $unwind: "$orders" },
+//       { $group: { _id: null, count: { $sum: 1 } } },
+//     ]);
+//     const count = totalOrders.length > 0 ? totalOrders[0].count : 0;
+//     const totalPages = Math.ceil(count / limit);
+//     const skip = (page - 1) * limit;
 
-    const orders = await Order.aggregate([
-      { $unwind: "$orders" },
-      { $sort: { "orders.createdAt": -1 } },
-      { $skip: skip },
-      { $limit: limit },
-    ]);
+//     const orders = await Order.aggregate([
+//       { $unwind: "$orders" },
+//       { $sort: { "orders.createdAt": -1 } },
+//       { $skip: skip },
+//       { $limit: limit },
+//     ]);
 
-    res.render("orderList", { orders, totalPages, page,limit });
-  } catch (error) {
-    console.log(error.message);
-  }
-};
+//     res.render("orderList", { orders, totalPages, page,limit });
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
 
 
 
@@ -201,6 +294,26 @@ const orderDetails = async (req,res)=>{
     }
   
   }
+
+
+const orderList = (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  orderHelper
+    .getOrderList(page, limit)
+    .then(({ orders, totalPages, page: currentPage, limit: itemsPerPage }) => {
+      res.render("orderList", {
+        orders,
+        totalPages,
+        page: currentPage,
+        limit: itemsPerPage,
+      });
+    })
+    .catch((error) => {
+      console.log(error.message);
+    });
+};
 
 
 const logout = (req,res) =>{
@@ -241,17 +354,17 @@ const returnOrder = async(req,res)=>{
     res.send(response);
   });
 
-}
+}   
 
 
 const getSalesReport =  async (req, res) => {
-  let report = await adminHelper.getSalesReport();
+  const report = await adminHelper.getSalesReport();
   let details = [];
   const getDate = (date) => {
-    let orderDate = new Date(date);
-    let day = orderDate.getDate();
-    let month = orderDate.getMonth() + 1;
-    let year = orderDate.getFullYear();
+    const orderDate = new Date(date);
+    const day = orderDate.getDate();
+    const month = orderDate.getMonth() + 1;
+    const year = orderDate.getFullYear();
     return `${isNaN(day) ? "00" : day} - ${isNaN(month) ? "00" : month} - ${
       isNaN(year) ? "0000" : year
     }`;
@@ -267,13 +380,12 @@ const getSalesReport =  async (req, res) => {
 }
 
 const postSalesReport =  (req, res) => {
-  let admin = req.session.admin;
   let details = [];
   const getDate = (date) => {
-    let orderDate = new Date(date);
-    let day = orderDate.getDate();
-    let month = orderDate.getMonth() + 1;
-    let year = orderDate.getFullYear();
+    const orderDate = new Date(date);
+    const day = orderDate.getDate();
+    const month = orderDate.getMonth() + 1;
+    const year = orderDate.getFullYear();
     return `${isNaN(day) ? "00" : day} - ${isNaN(month) ? "00" : month} - ${
       isNaN(year) ? "0000" : year
     }`;

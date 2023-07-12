@@ -22,9 +22,12 @@ const loadAddCategory = async(req,res)=>{
 const createCategory = async(req, res)=>{
     try {
       const existingCategory = await Category.findOne({name:req.body.name})
+
       if(existingCategory){
         return res.render("addCategory",{message:"Category already exists"})
       } 
+     
+      
       if (!req.body.name || req.body.name.trim().length === 0) {
         return res.render("addCategory", { message: "Name is required" });
     }
