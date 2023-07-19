@@ -21,7 +21,8 @@ const loadAddCategory = async(req,res)=>{
 
 const createCategory = async(req, res)=>{
     try {
-      const existingCategory = await Category.findOne({name:req.body.name})
+      const categoryName = req.body.name.toLowerCase()
+      const existingCategory = await Category.findOne({name:categoryName})
 
       if(existingCategory){
         return res.render("addCategory",{message:"Category already exists"})

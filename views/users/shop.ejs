@@ -67,24 +67,10 @@
     <%- include('../layouts/header.ejs') %>	
 
 	<!-- End Header Area -->
-
 	<!-- Start Banner Area -->
-	<section class="banner-area organic-breadcrumb">
-		<div class="container">
-			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
-				<div class="col-first">
-					<h1>Shop Category page</h1>
-					<nav class="d-flex align-items-center">
-						<a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-						<a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
-						<a href="category.html">Amazefit</a>
-					</nav>
-				</div>
-			</div>
-		</div>
-	</section>
+
 	<!-- End Banner Area -->
-	<div class="container">
+	<div class="container" style="margin-top: 165px; margin-bottom: 50px;">
 		<div class="row">
 			<div class="col-xl-3 col-lg-4 col-md-5">
 				<div class="sidebar-categories">
@@ -170,7 +156,7 @@
 											<span class="ti-bag"></span>
 											<p class="hover-text">add to bag</p>
 										</a>
-										<a href="" class="social-info">
+										<a onclick="addToWishList('<%=item._id%>')" class="social-info">
 											<span class="lnr lnr-heart"></span>
 											<p class="hover-text">Wishlist</p>
 										</a>
@@ -264,6 +250,43 @@
 		}
 	</script>
 
+
+<script>
+	function addToWishList(proId) {
+		event.preventDefault();
+    $.ajax({
+      url: '/add-to-wishlist',
+      method: 'POST',
+      data: {
+        proId: proId
+      },
+      success: (response) => {
+        if (response) {
+          // Product added to Wishlist successfully
+		  Swal.fire({
+			position: 'centre',
+			icon: 'success',
+			title: 'Product added to wish list',
+			showConfirmButton: false,
+			timer: 1500
+			})
+          
+
+        } else {
+          // Error adding product to Wishlist
+          Swal.fire({
+            icon: 'error',
+            title: 'Product already exist in Wishlist',
+            timer: 2000
+          });
+
+        }
+      }
+    })
+  }
+
+
+</script>
 
 
 	<script src="../user-assets/js/vendor/jquery-2.2.4.min.js"></script>

@@ -37,7 +37,6 @@ const loadDashboard = async(req,res)=>{
 
 
     ])
-    console.log(orders);
 
     const salesData = await Order.aggregate([
       { $unwind: "$orders" },
@@ -94,7 +93,12 @@ const loadDashboard = async(req,res)=>{
     const categoryCount  = await Category.find({}).count()
 
     const productsCount  = await Product.find({}).count()
+
     const onlinePay = await adminHelper.getOnlineCount()
+    const walletPay = await adminHelper.getWalletCount()
+    const codPay = await adminHelper.getCodCount()
+    const categorySales = await adminHelper.getCategorySales()
+
 
     const latestorders = await Order.aggregate([
       {$unwind:"$orders"},
@@ -105,7 +109,9 @@ const loadDashboard = async(req,res)=>{
     ]) 
 
 
-      res.render('dashboard',{orders,productsCount,categoryCount,onlinePay,salesData,order:latestorders,salesCount})
+      res.render('dashboard',{orders,productsCount,categoryCount,
+        onlinePay,salesData,order:latestorders,salesCount,
+        walletPay,codPay})
   } catch (error) {
       console.log(error)
   }
@@ -204,14 +210,25 @@ const deleteUser = async(req,res)=>{
 
 const blockUser = async(req,res)=>{
   try {
-    const id = req.query.id
+    const id = req.body.userId
     await User.findByIdAndUpdate({_id:id},{$set:{is_blocked:true}})
-    res.redirect('/admin/users')
+    res.send({status:true})
   } catch (error) {
     console.log(error)
   }
 }
 
+
+const unBlockUser = async(req,res)=>{
+  try {
+    const id = req.body.userId
+    console.log(id);
+    await User.findByIdAndUpdate({_id:id},{$set:{is_blocked:false}})
+    res.send({status:true})
+  } catch (error) {
+    console.log(error.message)
+  }
+}
 
 
 const loadEditUser = async(req,res)=>{
@@ -239,40 +256,7 @@ const updateUser = async(req,res)=>{
       console.log(error.message);
   }
 }
-const unBlockUser = async(req,res)=>{
-  try {
-    const id = req.query.id
-    await User.findByIdAndUpdate({_id:id},{$set:{is_blocked:false}})
-    res.redirect('/admin/users')
-  } catch (error) {
-    console.log(error.message)
-  }
-}
-// const orderList = async (req, res) => {
-//   try {
-//     const page = parseInt(req.query.page) || 1;
-//     const limit = parseInt(req.query.limit) || 10; 
 
-//     const totalOrders = await Order.aggregate([
-//       { $unwind: "$orders" },
-//       { $group: { _id: null, count: { $sum: 1 } } },
-//     ]);
-//     const count = totalOrders.length > 0 ? totalOrders[0].count : 0;
-//     const totalPages = Math.ceil(count / limit);
-//     const skip = (page - 1) * limit;
-
-//     const orders = await Order.aggregate([
-//       { $unwind: "$orders" },
-//       { $sort: { "orders.createdAt": -1 } },
-//       { $skip: skip },
-//       { $limit: limit },
-//     ]);
-
-//     res.render("orderList", { orders, totalPages, page,limit });
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
 
 
 
@@ -392,11 +376,9 @@ const postSalesReport =  (req, res) => {
   };
 
   adminHelper.postReport(req.body).then((orderData) => {
-    console.log(orderData, "orderData");
     orderData.forEach((orders) => {
       details.push(orders.orders);
     });
-    console.log(details, "details");
     res.render("salesReport", {details,getDate});
   });
 }

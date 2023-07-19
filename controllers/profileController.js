@@ -85,7 +85,6 @@ const submitAddress = async (req, res) => {
 ///edit address
 
 const editAddress = async (req, res) => {
-  console.log("hai");
   const id = req.body.id;
   const name = req.body.name;
   const address = req.body.address;

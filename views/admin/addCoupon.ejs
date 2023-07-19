@@ -207,12 +207,24 @@
       error3.innerText = 'Minimum amount is required'
       flag = 2
     }
+    if (minAmountValue < 0) {
+      error3.innerText = 'Minimum amount should be greater than or Equal to Zero'
+      flag = 2
+    }
     if (discountPercentageValue == '') {
       error4.innerText = 'Discount percentage is required'
       flag = 2
     }
+    if (discountPercentageValue <= 0 ||discountPercentageValue >= 99) {
+      error4.innerText = 'Discount percentage should be between  1 and 99 '
+      flag = 2
+    }
     if (maxDiscountValue == '') {
       error5.innerText = 'Maximum discount is required'
+      flag = 2
+    }
+    if (maxDiscountValue <= 0) {
+      error5.innerText = 'Maximum discount should be greater than Zero'
       flag = 2
     }
     if (descriptionValue == '') {

@@ -3115,7 +3115,7 @@ label {
 
 .filter-bar {
   padding: 0px 20px 10px 20px;
-  background: #828bb3; }
+  background: #000; }
   .filter-bar a, .filter-bar i {
     color: #000; }
 
@@ -3291,7 +3291,7 @@ label {
 
 .sidebar-categories .head {
   line-height: 60px;
-  background: #828bb3;
+  background: #000;
   padding: 0 30px;
   font-size: 16px;
   font-weight: 400;

@@ -10,11 +10,12 @@ require('dotenv').config();
 
 
 var instance = new Razorpay({
-  key_id: "rzp_test_vnJVUHrwVTclxY",
-  key_secret: "DOrqvhjJRahwiLgMQMX6KhiM",
+  key_id: process.env.RAZORPAY_ID,
+  key_secret: process.env.RAZORPAY_SECRET,
 });
 
 const placeOrder = (data,user)=>{
+  console.log(data);
     try {
         return new Promise(async (resolve, reject) => {
             const productDetails = await Cart.aggregate([
@@ -96,7 +97,11 @@ const placeOrder = (data,user)=>{
                 shippingAddress: addressData[0],
                 orderStatus: orderStatus,
                 totalPrice: data.total,
+                discountPercentage:data.discountPercentage,
+                discountAmount:data.discountAmount,
+                couponCode:data.couponCode,
                 cancelStatus:'false',
+                
                 createdAt:new Date()
               };
               const order = await Order.findOne({ user:user  });
@@ -244,7 +249,6 @@ const generateRazorpay = (userId, total)=> {
         receipt: "" + orderId,
       };
       instance.orders.create(options, function (err, order) {
-        console.log(order);
         if (err) {
           console.log(err);
         } else {
@@ -258,15 +262,15 @@ const generateRazorpay = (userId, total)=> {
 }
 // verify payment of razorpay
 
-const verifyPayment =  (details) => {
-  console.log("details"+details.payment.razorpay_payment_id);
+const verifyPayment =  async(details) => {
   try {
-    let key_secret = 'DOrqvhjJRahwiLgMQMX6KhiM';
+    await Order.updateOne({})
+
+    let key_secret = process.env.RAZORPAY_SECRET;
     return new Promise((resolve, reject) => {
       const crypto = require("crypto");
       let hmac = crypto.createHmac("sha256", key_secret);
-      console.log('order'+details["payment[razorpay_order_id]"]);
-      console.log('payment'+details["payment[razorpay_payment_id]"]);
+
 
       hmac.update(
         details.payment.razorpay_order_id +
@@ -275,8 +279,10 @@ const verifyPayment =  (details) => {
       );
       hmac = hmac.digest("hex");
       if (hmac == details.payment.razorpay_signature) {
+
         resolve();
       } else {
+        console.log('no matchhhhhhhhhhhhh');
         reject("not match");
       }
     });
@@ -286,9 +292,8 @@ const verifyPayment =  (details) => {
 }
 
 // change payment status
-const changePaymentStatus =  (userId, orderId) => {
+const changePaymentStatus =  (userId, orderId,razorpayId) => {
   try {
-    console.log("orderidrazor......."+orderId);
     return new Promise(async (resolve, reject) => {
       await Order.updateOne(
         { "orders._id": new ObjectId(orderId) },
@@ -296,6 +301,7 @@ const changePaymentStatus =  (userId, orderId) => {
           $set: {
             "orders.$.orderStatus": "Placed",
             "orders.$.paymentStatus": "Success",
+            "orders.$.razorpayId": razorpayId
           },
         }
       ),

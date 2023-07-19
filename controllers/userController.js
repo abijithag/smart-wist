@@ -32,51 +32,33 @@ const securePassword = async(password)=>{
 }
 const homeLoad = async(req,res)=>{
     try {
+       
         const banner = await Banner.find({}) 
         const category = await Category.find({ })
-        console.log(banner);
         res.render("home",{user:res.locals.user,category,banner})
     } catch (error) {
         console.log(error.message);
+        res.redirect('/error-500')
     }
 }
 
-const loadRegister = async(req,res)=>{
+const loadRegister = async(req,res)=>{ 
     try {
+      
         res.render('register')
     } catch (error) {
         console.log(error.message)
+        res.redirect('/error-500')
     }
 }
 const insertUser = async(req,res)=>{
     const email = req.body.email;
     const mobileNumber = req.body.mno
     const existingUser = await User.findOne({email:email})
-    if (!req.body.fname || req.body.fname.trim().length === 0) {
-        return res.render("register", { message: "Name is required" });
-    }
-    if (/\d/.test(req.body.fname) || /\d/.test(req.body.lname)) {
-        return res.render("register", { message: "Name should not contain numbers" });
-      }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)){
-        return res.render("register", { message: "Email Not Valid" });
-    }
+
     if(existingUser){
       return res.render("register",{message:"Email already exists"})
     }
-    const mobileNumberRegex = /^\d{10}$/;
-    if (!mobileNumberRegex.test(mobileNumber)) {
-        return res.render("register", { message: "Mobile Number should have 10 digit" });
-
-    }
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-    if(!passwordRegex.test(req.body.password)){
-        return res.render("register", { message: "Password Should Contain atleast 8 characters,one number and a special character" });
-    }
-    console.log(req.body.password)
-    console.log(req.body.confPassword)
-
 
     if(req.body.password!=req.body.confPassword){
         return res.render("register", { message: "Password and Confirm Password must be same" });
@@ -90,10 +72,11 @@ const insertUser = async(req,res)=>{
         req.session.userData = req.body;
 
         req.session.mobile = mobileNumber 
-        console.log("before render");
         res.render('verifyOtp')
     } catch (error) {
-        console.log(error.message); 
+        console.log(error.message);
+        res.redirect('/error-500')
+ 
     }
 }
 const loginLoad = async(req,res)=>{
@@ -106,6 +89,8 @@ const loginLoad = async(req,res)=>{
         
     } catch (error) {
         console.log(error.message);
+        res.redirect('/error-500')
+
     }
 }
 
@@ -119,6 +104,7 @@ const verifyLogin = async (req, res) => {
       const token = result.token;
       res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
       res.redirect('/');
+      
     }
   };
 
@@ -182,7 +168,9 @@ const verifyOtp = async(req,res)=>{
 
 
     } catch (error) {
-        console.log(error.message);     
+        console.log(error.message);
+        res.redirect('/error-500')
+     
     }
 }
 
@@ -190,7 +178,9 @@ const profile = async(req,res)=>{
     try {
         res.render('profile',{user:res.locals.user})
     } catch (error) {
-        console.log(error.message)   
+        console.log(error.message)
+        res.redirect('/error-500')
+   
     }
 }
 
@@ -216,6 +206,8 @@ const loadForgotPassword = async(req,res)=>{
         res.render('forgotPassword')
     } catch (error) { 
         console.log(error.message)
+        res.redirect('/error-500')
+
     }
 }
 
@@ -234,7 +226,8 @@ const resetPasswordOtpVerify = async (req,res)  => {
         }
     }catch(error){
         console.log(error);
-        return console.log("an error occured");
+        res.redirect('/error-500')
+
     }
 }
 
@@ -262,31 +255,45 @@ const setNewPassword = async (req ,res) => {
 }
 
 const logout = (req,res) =>{
+  try {
     res.cookie('jwt', '' ,{maxAge : 1})
     res.redirect('/')
+    
+  } catch (error) {
+    console.log(error.message);
+    res.redirect('/error-500')
+
+    
+  }
+    
 }
 
-// const displayProduct = async(req,res)=>{
-//     try {
-//         const category = await Category.find({ })
-//         const product = await Product.find({ $and: [{ isListed: true }, { isProductListed: true }] }).populate('category');
-//         res.render('shop',{product:product,category})    
-//     } catch (error) {
-//       console.log(error.message)
-//     }
-//   }
+
 const displayProduct = async (req, res) => {
     try {
       const category = await Category.find({});
-      const page = parseInt(req.query.page) || 1; 
+      const page = parseInt(req.query.page) || 1;
       const limit = 6;
       const skip = (page - 1) * limit; // Calculate the number of products to skip
+      const searchQuery = req.query.search || ''; // Get the search query from request query parameters
   
-      // Fetch products with pagination
-      const totalProducts = await Product.countDocuments({ $and: [{ isListed: true }, { isProductListed: true }] }); // Get the total number of products
+      // Build the search filter
+      const searchFilter = {
+        $and: [
+          { isListed: true },
+          { isProductListed: true },
+          {
+            $or: [
+              { name: { $regex: new RegExp(searchQuery, 'i') } },
+            ],
+          },
+        ],
+      };
+  
+      const totalProducts = await Product.countDocuments(searchFilter); // Get the total number of products matching the search query
       const totalPages = Math.ceil(totalProducts / limit); // Calculate the total number of pages
   
-      const products = await Product.find({ $and: [{ isListed: true }, { isProductListed: true }] })
+      const products = await Product.find(searchFilter)
         .skip(skip)
         .limit(limit)
         .populate('category');
@@ -294,15 +301,21 @@ const displayProduct = async (req, res) => {
       res.render('shop', { product: products, category, currentPage: page, totalPages });
     } catch (error) {
       console.log(error.message);
+      res.redirect('/error-500')
+
     }
   };
   
+
+
 
 const checkOut = (req,res)=>{
     try {
         res.render('checkOut')
     } catch (error) {
         console.log(error.message)
+        res.redirect('/error-500')
+
         
     }
 }
@@ -311,8 +324,7 @@ const checkOut = (req,res)=>{
 
 const editInfo = async (req, res) => {
     try {
-      userId = res.locals.user._id;
-      console.log("userid:" + userId);
+      const userId = res.locals.user._id;
       const { fname, lname, email, mobile } = req.body;
   
       const result = await User.updateOne(
@@ -323,6 +335,8 @@ const editInfo = async (req, res) => {
       res.redirect("/profile");
     } catch (error) {
       console.log(error.message);
+      res.redirect('/error-500')
+
     }
   };
   
@@ -345,6 +359,8 @@ const editInfo = async (req, res) => {
       }
     } catch (error) {
       console.log(error.message);
+      res.redirect('/error-500')
+
     }
   };
 
@@ -371,7 +387,40 @@ const editInfo = async (req, res) => {
     }
     catch(err){
         console.log('category page error',err);
+        res.redirect('/error-500')
+
     }
+}
+
+
+
+const error404 = async(req,res)=>{
+  try {
+    res.render('errorPages/error-404')
+    
+  } catch (error) {
+    console.log(error.message);
+    
+  }
+}
+const error403 = async(req,res)=>{
+  try {
+    res.render('errorPages/error-403')
+    
+  } catch (error) {
+    console.log(error.message);
+    
+  }
+}
+
+const error500 = async(req,res)=>{
+  try {
+    res.render('errorPages/error-500')
+    
+  } catch (error) {
+    console.log(error.message);
+    
+  }
 }
 
 module.exports = {
@@ -389,9 +438,12 @@ module.exports = {
     profile,
     logout,
     displayProduct,
-    checkOut,
+    checkOut, 
     editInfo,
     editPassword,
-    categoryPage
+    categoryPage,
+    error404,
+    error403,
+    error500
 
 }

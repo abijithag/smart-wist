@@ -6,6 +6,7 @@ const block = require('../middleware/blockMiddleware');
 const productController = require('../controllers/productController')
 const profileController = require('../controllers/profileController')
 const orderController = require('../controllers/orderController')
+const wishlistController = require('../controllers/wishlistController')
 
 const cartController = require('../controllers/cartController')
 const cookieparser = require('cookie-parser')
@@ -68,8 +69,8 @@ userRoute.get('/productPage',productController.productPage)
 userRoute.get('/categoryShop',userController.categoryPage)
 
 //cart
-userRoute.get('/cart',validate.requireAuth,cartController.loadCart)
-userRoute.post('/addToCart/:id',cartController.addToCart)
+userRoute.get('/cart',block.checkBlocked,validate.requireAuth,cartController.loadCart)
+userRoute.post('/addToCart/:id',block.checkBlocked,validate.requireAuth,cartController.addToCart)
 
 userRoute.put('/change-product-quantity',cartController.updateQuantity)
 userRoute.delete("/delete-product-cart",cartController.deleteProduct);
@@ -82,7 +83,7 @@ userRoute.post('/submitAddress',profileController.submitAddress)
 userRoute.post('/updateAddress',profileController.editAddress)
 userRoute.post('/editPassword',userController.editPassword)
 userRoute.post('/editInfo',userController.editInfo)
-userRoute.get('/profileAddress',profileController.profileAdress)
+userRoute.get('/profileAddress',block.checkBlocked,validate.requireAuth,profileController.profileAdress)
 
 //checkout
 userRoute.get('/checkOut',block.checkBlocked,validate.requireAuth,orderController.checkOut)
@@ -92,9 +93,8 @@ userRoute.post('/checkOutAddress',profileController.checkOutAddress)
 
 userRoute.post('/changeDefaultAddress',orderController.changePrimary)
 userRoute.get('/deleteAddress',profileController.deleteAddress)
-userRoute.get('/orderDetails',orderController.orderDetails)
+userRoute.get('/orderDetails',block.checkBlocked,validate.requireAuth,orderController.orderDetails)
 
-// userRoute.get('/orderList',block.checkBlocked,validate.requireAuth,orderController.orderList)
 userRoute.get('/profileOrderList',block.checkBlocked,validate.requireAuth,orderController.orderList)
 
 userRoute.put('/cancelOrder',orderController.cancelOrder)   
@@ -103,5 +103,17 @@ userRoute.get('/applyCoupon/:id',orderController.applyCoupon)
 userRoute.get('/couponVerify/:id',orderController.verifyCoupon)
 
 userRoute.post('/verifyPayment',orderController.verifyPayment)  
+userRoute.post('/paymentFailed',orderController.paymentFailed)  
+
+userRoute.post('/add-to-wishlist',wishlistController.addWishList)
+userRoute.get('/wishlist',validate.requireAuth,wishlistController.getWishList)
+userRoute.delete('/remove-product-wishlist',wishlistController.removeProductWishlist)
+//error
+
+userRoute.get('/error-404',userController.error404)
+userRoute.get('/error-403',userController.error403)
+userRoute.get('/error-500',userController.error500)
+
+
 
 module.exports = userRoute 

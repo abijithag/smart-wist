@@ -91,6 +91,7 @@
 						<thead>
 							<tr>
 								<th scope="col">Product</th>
+								<th scope="col">Price / Unit</th>
 								<th scope="col">Quantity</th>
 								<th scope="col">Total</th>
 							</tr>
@@ -103,24 +104,47 @@
 									<p><%=product.productName%></p>
 								</td>
 								<td>
+									<p>₹<%=product.productPrice%></p>
+								</td>
+								<td>
 									<h5>x<%=product.quantity%></h5>
 								</td>
 								<td>
-									<p>₹<%=product.productPrice%></p>
+									<p>₹<%=product.productPrice*product.quantity%></p>
 								</td>
 							</tr>
 							<% }) %>
-
-						
 							<tr>
 								<td>
-									<h4>Subtotal</h4>
+									<h4>Coupon Code</h4>
 								</td>
 								<td>
 									<h5></h5>
 								</td>
 								<td>
-									<p>₹<%=orders[0].totalPrice%></p>
+									<p><%=orders[0].couponCode%></p>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h4>Discount %</h4>
+								</td>
+								<td>
+									<h5></h5>
+								</td>
+								<td>
+									<p><%=orders[0].discountPercentage%> %</p>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<h4>Discount Amount</h4>
+								</td>
+								<td>
+									<h5></h5>
+								</td>
+								<td>
+									<p>₹ <%=orders[0].discountAmount%></p>
 								</td>
 							</tr>
 						
@@ -132,7 +156,7 @@
 									<h5></h5>
 								</td>
 								<td>
-									<p>₹<%=orders[0].totalPrice%></p>
+									<p>₹ <%=orders[0].totalPrice%></p>
 								</td>
 							</tr>
 						</tbody>

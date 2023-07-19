@@ -74,16 +74,14 @@ const changePrimary = async (req, res) => {
 };
 
 const postCheckOut  = async (req, res) => {
-  console.log(req.body, "body");
   try {
     const userId = res.locals.user._id;
     const data = req.body;
-    console.log('typeof'+typeof(data.total));
     const couponCode = data.couponCode
     // await couponHelper.addCouponToUser(couponCode, userId);
 
 
-    try {
+    try { 
       const response = await orderHelper.placeOrder(data,userId);
       if (data.paymentOption === "cod") { 
         res.json({ codStatus: true });
@@ -122,6 +120,23 @@ const orderDetails = async (req,res)=>{
   }
 
 }
+
+const paymentFailed = async(req,res)=>{
+  try {
+    const order = req.body
+    console.log(order.order.receipt);
+    const deleted = await Order.updateOne(
+      { "orders._id": new ObjectId(order.order.receipt) },
+      { $pull: { orders: { _id:new ObjectId(order.order.receipt) } } }
+
+    )
+    console.log(deleted);
+    res.send({status:true})
+  } catch (error) {
+    
+  }
+  
+}
 const orderList  = async(req,res)=>{
   try {
     const user  = res.locals.user
@@ -148,7 +163,6 @@ const cancelOrder = async(req,res)=>{
   const orderId = req.body.orderId
   const status = req.body.status
   orderHelper.cancelOrder(orderId, status).then((response) => {
-    console.log(response);
     res.send(response);
   });
 
@@ -175,18 +189,22 @@ const applyCoupon =  async (req, res) => {
 
 
 const verifyPayment =  (req, res) => {
+  const orderId = req.body.order.receipt
 
   orderHelper.verifyPayment(req.body).then(() => {
     orderHelper
-      .changePaymentStatus(res.locals.user._id, req.body.order.receipt)
+      .changePaymentStatus(res.locals.user._id, req.body.order.receipt,req.body.payment.razorpay_payment_id)
       .then(() => {
-        console.log(req.body);
         res.json({ status: true });
       })
       .catch((err) => {
         res.json({ status: false });
+        console.log("faileeeeeeeeeeeeeeeeeeeeed");
       });
-  }).catch((err)=>{
+  }).catch(async(err)=>{
+    // const deleted = await Order.deleteOne({"orders._id":new ObjectId(orderId)})
+    // console.log(deleted);
+    
     console.log(err);
 
   });
@@ -203,6 +221,7 @@ module.exports = {
     cancelOrder,
     verifyCoupon,
     applyCoupon,
-    verifyPayment
+    verifyPayment,
+    paymentFailed
 
 }

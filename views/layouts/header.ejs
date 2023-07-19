@@ -54,14 +54,7 @@
               </ul>
               
             </li>
-            <li class="nav-item submenu dropdown">
-              <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-               aria-expanded="false">Blog</a>
-              <ul class="dropdown-menu">
-                <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
-                <li class="nav-item"><a class="nav-link" href="single-blog.html">Blog Details</a></li>
-              </ul>
-            </li>
+            
                           <% if (typeof user!=='undefined' && user!==null) { %>
                               <li class="nav-item submenu dropdown active">
                                   <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
@@ -85,8 +78,11 @@
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="nav-item"><a href="/cart" class="cart"><span class="ti-bag"></span></a></li>
+            <li class="nav-item"><a href="/wishlist" class="cart"><span class="lnr lnr-heart"></span></a></li>
+
             <li class="nav-item">
               <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
+            
             </li>
           </ul>
         </div>
@@ -95,8 +91,8 @@
   </div>
   <div class="search_input" id="search_input_box">
     <div class="container">
-      <form class="d-flex justify-content-between">
-        <input type="text" class="form-control" id="search_input" placeholder="Search Here">
+      <form class="d-flex justify-content-between" action="/shop">
+        <input type="text" class="form-control" id="search_input" placeholder="Search Here" name="search">
         <button type="submit" class="btn"></button>
         <span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
       </form>

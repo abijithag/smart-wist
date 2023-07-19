@@ -214,11 +214,11 @@ const getAllOrder  = () => {
           {
             $unwind: "$orders",
           },
-          // {
-          //   $match: {
-          //     "orders.orderConfirm": "delivered",
-          //   },
-          // },
+          {
+            $match: {
+              "orders.orderStatus": "Delivered",
+            },
+          },
         ]).then((response) => {
           resolve(response);
         });
@@ -230,7 +230,6 @@ const getAllOrder  = () => {
 
 
   const postReport = (date) => {
-    console.log(date, "date+++++");
     try {
       const start = new Date(date.startdate);
       const end = new Date(date.enddate);
@@ -291,6 +290,74 @@ const getAllOrder  = () => {
       resolve(response);
     });
   }
+  const getWalletCount =  () => {
+    return new Promise(async (resolve, reject) => {
+      const response = await Order.aggregate([
+        {
+          $unwind: "$orders",
+        },
+        {
+          $match: {
+            "orders.paymentMethod": "wallet",
+            "orders.orderStatus": "Delivered" 
+
+          },
+        },
+        {
+          $group:{
+            _id: null,
+          totalPriceSum: { $sum: { $toInt: "$orders.totalPrice" } },
+          count: { $sum: 1 }
+
+          }
+
+        }
+
+      ]);
+      resolve(response);
+    });
+  }
+
+  const getCodCount =  () => {
+    return new Promise(async (resolve, reject) => {
+      const response = await Order.aggregate([
+        {
+          $unwind: "$orders",
+        },
+        {
+          $match: {
+            "orders.paymentMethod": "cod",
+            "orders.orderStatus": "Delivered" 
+
+          },
+        },
+        {
+          $group:{
+            _id: null,
+          totalPriceSum: { $sum: { $toInt: "$orders.totalPrice" } },
+          count: { $sum: 1 }
+
+          }
+
+        }
+
+      ]);
+      resolve(response);
+    });
+  }
+
+
+  const getCategorySales = async()=>{
+    const response = await Order.aggregate([
+      {
+        $unwind: "$orders",
+      },
+    ])
+    console.log(response);
+      
+
+   
+  }
   
 
   module.exports = {
@@ -301,5 +368,8 @@ const getAllOrder  = () => {
     returnOrder,
     getSalesReport,
     postReport,
-    getOnlineCount
+    getOnlineCount,
+    getWalletCount,
+    getCodCount,
+    getCategorySales
   }

@@ -248,7 +248,7 @@ flatpickr(".flatpickr", {
   
       function export_data() {
           let data = document.getElementById('container_content');
-          var fp = XLSX.utils.table_to_book(data, { sheet: 'vishal' });
+          var fp = XLSX.utils.table_to_book(data, { sheet: 'SalesReport' });
           XLSX.write(fp, {
               bookType: 'xlsx',
               type: 'base64'

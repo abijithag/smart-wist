@@ -4,7 +4,7 @@ const adminController = require('../controllers/adminController')
 const categoryController = require('../controllers/categoryController')
 const productController = require('../controllers/productController')
 const couponController = require('../controllers/couponController')
-
+const bannerController = require('../controllers/bannerController')
 
 const multer = require("../multer/multer");
 
@@ -50,8 +50,8 @@ adminRoute.post('/editCategory',validate.requireAuth,categoryController.updateCa
 
 adminRoute.get('/users',validate.requireAuth,adminController.loadUsers)
 adminRoute.get('/deleteUser',validate.requireAuth,adminController.deleteUser)
-adminRoute.get('/blockUser',validate.requireAuth,adminController.blockUser)
-adminRoute.get('/unBlockUser',validate.requireAuth,adminController.unBlockUser)
+adminRoute.post('/blockUser',validate.requireAuth,adminController.blockUser)
+adminRoute.post('/unBlockUser',validate.requireAuth,adminController.unBlockUser)
 
 
 adminRoute.get('/editUser',validate.requireAuth,adminController.loadEditUser)
@@ -79,10 +79,10 @@ adminRoute.put('/returnOrder',adminController.returnOrder)
 
 //coupon
 
-adminRoute.get('/addCoupon',couponController.loadCouponAdd)
+adminRoute.get('/addCoupon',validate.requireAuth,couponController.loadCouponAdd)
 adminRoute.post('/addCoupon',couponController.addCoupon)
-adminRoute.get('/generate-coupon-code',couponController.generateCouponCode)
-adminRoute.get('/couponList',couponController.couponList)
+adminRoute.get('/generate-coupon-code',validate.requireAuth,couponController.generateCouponCode)
+adminRoute.get('/couponList',validate.requireAuth,couponController.couponList)
 
 adminRoute.delete('/removeCoupon',couponController.removeCoupon)
 
@@ -90,13 +90,20 @@ adminRoute.delete('/removeCoupon',couponController.removeCoupon)
 
 //salesReport
 
-adminRoute.get('/salesReport',adminController.getSalesReport)
+adminRoute.get('/salesReport',validate.requireAuth,adminController.getSalesReport)
 adminRoute.post('/salesReport',adminController.postSalesReport)
 
-adminRoute.get('/logout',adminController.logout)
+adminRoute.get('/logout',validate.requireAuth,adminController.logout)
+
+//product
 
 
 
+adminRoute.get('/addBanner',validate.requireAuth,bannerController.addBannerGet)
+adminRoute.post('/addBanner',multer.addBannerupload,bannerController.addBannerPost)
+adminRoute.get('/bannerList',validate.requireAuth,bannerController.bannerList)
+
+adminRoute.get('/deleteBanner',bannerController.deleteBanner)
 
 
 

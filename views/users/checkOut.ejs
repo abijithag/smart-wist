@@ -131,7 +131,8 @@
                                 <li><a href="#">Discount  <span id="couponOffer"></span></a></li>
 
                                 <li><a href="#">Total <span id="total">₹<%=total.cartTotal%></span></a></li>
-
+                                <input type="hidden" name="discountPercentage" id="discountPercentage" value="0">
+                                <input type="hidden" name="discountAmount" id="discountAmount" value="0">
                                 <input type="hidden" name="total" value="<%=total.cartTotal%>" id="totalVal" >
                                 <%if(address[0]){%>
                                 <input type="hidden" name="address" value="<%=address[0]._id%>" >
@@ -362,7 +363,10 @@ function applyCoupon(total) {
                 document.getElementById('total').innerText = '₹' + Math.floor(total - response.discountAmount)
                 document.getElementById('totalVal').value = Math.floor(total - response.discountAmount)
                 document.getElementById('couponOffer').innerText = response.discount + '%'
-                document.getElementById('codes').value = response.couponCode
+                document.getElementById('discountPercentage').value = response.discount
+                document.getElementById('discountAmount').value = Math.ceil(response.discountAmount)
+
+
               } else {
                 document.getElementById('couponErr').style.color = "#ff0707" 
                 document.getElementById('couponErr').innerText = response.message
@@ -382,6 +386,9 @@ function applyCoupon(total) {
       }
     })
   }
+
+
+
 </script>
 <script>
     // Get references to the elements
@@ -458,6 +465,13 @@ function applyCoupon(total) {
         verifypayment(response, order)
       },
 
+      "modal": {
+      "ondismiss": function() {
+        console.log('Payment window closed');
+        paymentFailed(order);
+      }
+    },
+
       "prefill": {
         "name": "Vinayak",
         "email": "vinayak@example.com",
@@ -475,7 +489,7 @@ function applyCoupon(total) {
   }
 
   function verifypayment(payment, order,paymentId) {
-    console.log(payment, order, paymentId,'---------------');
+    console.log('12121212121212',payment, order, paymentId,'-------------1212121212121212--');
     $.ajax({
       url: 'verifyPayment',
       method: 'post',
@@ -503,7 +517,31 @@ function applyCoupon(total) {
     })
   }
 
+  function paymentFailed(order) {
+    $.ajax({
+      url: 'paymentFailed',
+      method: 'post',
+      data: {
+        order,
+      },
+       
+      success: (response) => {
+        if (response.status) {
+          Swal.fire({
+            title: 'Order Failed!',
+            text: 'Your order is failed.',
+            icon: 'error',
+            timer: 5000
+          }).then(() => {
+            location.href = '/'
+          })
+        } else {
 
+        }
+
+      }
+    })
+  }
 
 </script>
 

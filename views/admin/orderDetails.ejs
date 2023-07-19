@@ -93,17 +93,7 @@
                             </span> <br>
                             <small class="text-muted">Order ID: <%=orders[0]._id%></small>
                         </div>
-                        <div class="col-lg-6 col-md-6 ms-auto text-md-end">
-                            <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200">
-                                <option>Change status</option>
-                                <option>Awaiting payment</option>
-                                <option>Confirmed</option>
-                                <option>Shipped</option>
-                                <option>Delivered</option>
-                            </select>
-                            <a class="btn btn-primary" href="#">Save</a>
-                            <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print"></i></a>
-                        </div>
+                     
                     </div>
                 </header> <!-- card-header end// -->
                 <div class="card-body">
@@ -166,7 +156,7 @@
                                                 </a>
                                             </td>
                                             <td> ₹<%=product.productPrice%></td>
-                                            <td> <%=product.quantity%></td>
+                                            <td> <%=product.quantity%></td> 
                                             <td class="text-end"> ₹<%= product.productPrice*product.quantity %> </td>
                                         </tr>
                                         <% }) %>
@@ -177,6 +167,18 @@
                                         <tr>
                                             <td colspan="4">
                                                 <article class="float-end">
+                                                    <dl class="dlist">
+                                                        <dt>Coupon Code:</dt>
+                                                        <dd> <b class="h6"><%=orders[0].couponCode%></b> </dd>
+                                                    </dl>
+                                                    <dl class="dlist">
+                                                        <dt>Discount Percentage:</dt>
+                                                        <dd> <b class="h6"><%=orders[0].discountPercentage+' % '%></b> </dd>
+                                                    </dl>
+                                                    <dl class="dlist">
+                                                        <dt>Discount Amount:</dt>
+                                                        <dd> <b class="h6"><%='- ₹ '+orders[0].discountAmount%></b> </dd>
+                                                    </dl>
                                                 
                                                     <dl class="dlist">
                                                         <dt>Grand total:</dt>
@@ -197,13 +199,24 @@
                         </div> <!-- col// -->
                         <div class="col-lg-1"></div>
                         <div class="col-lg-4">
+                            <%if(orders[0].paymentMethod == 'razorpay'){%>
                             <div class="box shadow-sm bg-light">
                                 <h6 class="mb-15">Payment info</h6>
                                 <p>
-                                    Payment Method : <%=orders[0].paymentMethod%> <br>
-                                  
+                                    Payment Method : Razorpay <br>
+
                                 </p>
+                                <p style="font-weight: bold;">Transaction Id : <%=orders[0].razorpayId%> </p>
                             </div>
+                            <%}else{%>
+                                <div class="box shadow-sm bg-light">
+                                    <h6 class="mb-15">Payment info</h6>
+                                    <p>
+                                        Payment Method : <%=orders[0].paymentMethod.toUpperCase()%> <br>
+                                      
+                                    </p>
+                                </div>
+                                <%}%>
                          
                         </div> <!-- col// -->
                     </div>
@@ -232,6 +245,7 @@
     <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
     <!-- Main Script -->
     <script src="assets/js/main.js" type="text/javascript"></script>
+    
 </body>
 
 
