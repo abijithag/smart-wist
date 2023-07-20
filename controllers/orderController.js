@@ -4,7 +4,10 @@ const orderHelper = require('../helpers/orderHelper')
 const Order = require('../models/orderModel');
 const { ObjectId } = require("mongodb");
 const couponHelper = require('../helpers/couponHelper')
-
+const easyinvoice = require("easyinvoice");
+const fs = require("fs");
+const { Readable } = require('stream');
+const path=require('path')
 
 const checkOut = async (req,res)=>{
     try {
@@ -82,21 +85,32 @@ const postCheckOut  = async (req, res) => {
 
 
     try { 
-      const response = await orderHelper.placeOrder(data,userId);
+      const checkStock = await orderHelper.checkStock(userId)
+      console.log("checkStock",checkStock);
+      if(checkStock){
       if (data.paymentOption === "cod") { 
-        res.json({ codStatus: true });
+        const updatedStock = await orderHelper.updateStock(userId)
+        const response = await orderHelper.placeOrder(data,userId);
         await Cart.deleteOne({ user:userId  })
+        res.json({ codStatus: true });
       } 
         else if (data.paymentOption === "wallet") {
+          const updatedStock = await orderHelper.updateStock(userId)
+          const response = await orderHelper.placeOrder(data,userId);
           res.json({ orderStatus: true, message: "order placed successfully" });
           await Cart.deleteOne({ user:userId  })
       }else if (data.paymentOption === "razorpay") {
+        const response = await orderHelper.placeOrder(data,userId);
         const order = await orderHelper.generateRazorpay(userId,data.total);
         res.json(order);
+       
       }
+    }else{
+      await Cart.deleteOne({ user:userId  })
+      res.json({ status: 'OrderFailed' });
+    }
 
     } catch (error) {
-      console.log("got here ----");
       console.log({ error: error.message }, "22");
       res.json({ status: false, error: error.message });
     }
@@ -124,7 +138,6 @@ const orderDetails = async (req,res)=>{
 const paymentFailed = async(req,res)=>{
   try {
     const order = req.body
-    console.log(order.order.receipt);
     const deleted = await Order.updateOne(
       { "orders._id": new ObjectId(order.order.receipt) },
       { $pull: { orders: { _id:new ObjectId(order.order.receipt) } } }
@@ -181,7 +194,6 @@ const applyCoupon =  async (req, res) => {
   const couponCode = req.params.id 
   const userId = res.locals.user._id
   const total = await orderHelper.totalCheckOutAmount(userId) 
-  console.log("totalhelper :"+total);
   couponHelper.applyCoupon(couponCode, total).then((response) => {
       res.send(response)
   }) 
@@ -199,16 +211,106 @@ const verifyPayment =  (req, res) => {
       })
       .catch((err) => {
         res.json({ status: false });
-        console.log("faileeeeeeeeeeeeeeeeeeeeed");
       });
   }).catch(async(err)=>{
-    // const deleted = await Order.deleteOne({"orders._id":new ObjectId(orderId)})
-    // console.log(deleted);
     
     console.log(err);
 
   });
 }
+
+const downloadInvoice = async (req, res) => {
+  try {
+    const id = req.query.id
+    userId = res.locals.user._id;
+
+    result = await orderHelper.findOrder(id, userId);
+    const date = result[0].createdAt.toLocaleDateString();
+    const product = result[0].productDetails;
+
+    const order = {
+      id: id,
+      total:parseInt( result[0].totalPrice),
+      date: date,
+      payment: result[0].paymentMethod,
+      name: result[0].shippingAddress.item.name,
+      street: result[0].shippingAddress.item.address,
+      locality: result[0].shippingAddress.item.locality,
+      city: result[0].shippingAddress.item.city,
+      state: result[0].shippingAddress.item.state,
+      pincode: result[0].shippingAddress.item.pincode,
+      product: result[0].productDetails,
+    };
+
+    const products = order.product.map((product) => ({
+      "quantity":parseInt( product.quantity),
+      "description": product.productName,
+      "tax-rate":0,
+      "price": parseInt(product.productPrice),
+    }));
+
+  
+    var data = {
+      customize: {},
+      images: {
+        // logo: "https://public.easyinvoice.cloud/img/logo_en_original.png",
+
+        background: "https://public.easyinvoice.cloud/img/watermark-draft.jpg",
+      },
+
+
+      sender: {
+        company: "Smart Wrist",
+        address: "Brototype",
+        zip: "686633",
+        city: "Maradu",
+        country: "India",
+      },
+
+      client: {
+        company: order.name,
+        address: order.street,
+        zip: order.pincode,
+        city: order.city,
+        // state:" <%=order.state%>",
+        country: "India",
+      },
+      information: {
+        number: order.id,
+
+        date: order.date,
+        // Invoice due date
+        "due-date": "Nil",
+      },
+
+      products: products,
+      // The message you would like to display on the bottom of your invoice
+      "bottom-notice": "Thank you,Keep shopping.",
+    };
+
+    easyinvoice.createInvoice(data, async function (result) {
+      //The response will contain a base64 encoded PDF file
+      await fs.writeFileSync("invoice.pdf", result.pdf, "base64");
+
+
+       // Set the response headers for downloading the file
+       res.setHeader('Content-Disposition', 'attachment; filename="invoice.pdf"');
+       res.setHeader('Content-Type', 'application/pdf');
+ 
+       // Create a readable stream from the PDF base64 string
+       const pdfStream = new Readable();
+       pdfStream.push(Buffer.from(result.pdf, 'base64'));
+       pdfStream.push(null);
+ 
+       // Pipe the stream to the response
+       pdfStream.pipe(res);
+
+      
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 
 
@@ -222,6 +324,7 @@ module.exports = {
     verifyCoupon,
     applyCoupon,
     verifyPayment,
-    paymentFailed
+    paymentFailed,
+    downloadInvoice
 
 }

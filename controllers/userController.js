@@ -32,7 +32,7 @@ const securePassword = async(password)=>{
 }
 const homeLoad = async(req,res)=>{
     try {
-       
+        
         const banner = await Banner.find({}) 
         const category = await Category.find({ })
         res.render("home",{user:res.locals.user,category,banner})
@@ -276,6 +276,10 @@ const displayProduct = async (req, res) => {
       const limit = 6;
       const skip = (page - 1) * limit; // Calculate the number of products to skip
       const searchQuery = req.query.search || ''; // Get the search query from request query parameters
+      const sortQuery = req.query.sort || 'default'; // Get the sort query from request query parameters (default value is 'default')
+      const minPrice = parseFloat(req.query.minPrice); // Get the minimum price from request query parameters
+      const maxPrice = parseFloat(req.query.maxPrice)
+
   
       // Build the search filter
       const searchFilter = {
@@ -289,6 +293,16 @@ const displayProduct = async (req, res) => {
           },
         ],
       };
+      if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+        searchFilter.$and.push({ price: { $gte: minPrice, $lte: maxPrice } });
+      }
+
+      let sortOption = {};
+      if (sortQuery === 'price_asc' ||sortQuery === 'default' ) {
+        sortOption = { price: 1 }; 
+      } else if (sortQuery === 'price_desc') {
+        sortOption = { price: -1 }; 
+      }
   
       const totalProducts = await Product.countDocuments(searchFilter); // Get the total number of products matching the search query
       const totalPages = Math.ceil(totalProducts / limit); // Calculate the total number of pages
@@ -296,6 +310,7 @@ const displayProduct = async (req, res) => {
       const products = await Product.find(searchFilter)
         .skip(skip)
         .limit(limit)
+        .sort(sortOption)
         .populate('category');
   
       res.render('shop', { product: products, category, currentPage: page, totalPages });
@@ -354,7 +369,6 @@ const editInfo = async (req, res) => {
           { _id: userId }, 
           { $set: { password: spassword } } 
         );
-        console.log(result);
         res.redirect('/profile')
       }
     } catch (error) {
@@ -381,8 +395,7 @@ const editInfo = async (req, res) => {
         .skip(skip)
         .limit(limit)
         .populate('category')
-        // console.log("products",products);
-        // console.log("categories",categories);
+
         res.render('categoryShop',{product,category, currentPage: page, totalPages })
     }
     catch(err){
@@ -423,6 +436,20 @@ const error500 = async(req,res)=>{
   }
 }
 
+
+const postReview = async(req,res)=>{
+  try {
+    const review = {
+
+    }
+
+    
+  } catch (error) {
+    console.log(error.message);
+  }
+
+}
+
 module.exports = {
     homeLoad,
     loadRegister,
@@ -444,6 +471,7 @@ module.exports = {
     categoryPage,
     error404,
     error403,
-    error500
+    error500,
+    postReview
 
 }

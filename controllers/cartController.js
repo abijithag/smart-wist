@@ -5,7 +5,6 @@ const Cart = require('../models/cartModel');
 
 const addToCart = (req,res)=>{
     try {
-      console.log(req.params.id)
         cartHelper.addCart(req.params.id,res.locals.user._id)
         .then((response)=>{
             res.send(response)

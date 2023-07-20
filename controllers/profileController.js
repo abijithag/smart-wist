@@ -44,9 +44,7 @@ const profileAdress = async (req, res) => {
 
 const submitAddress = async (req, res) => {
   try {
-    console.log('SUBMIT')
     const userId = res.locals.user._id;
-    console.log(userId);
     const name = req.body.name;
     const mobileNumber = req.body.mno;
     const address = req.body.address;
@@ -118,8 +116,6 @@ const editAddress = async (req, res) => {
 const deleteAddress = async (req, res) => {
   const userId = res.locals.user._id;
   const addId = req.query.id;
-  console.log("user" + userId);
-  console.log(addId);
 
   const deleteobj = await Address.updateOne(
     { user: userId }, 
@@ -131,9 +127,7 @@ const deleteAddress = async (req, res) => {
 
 const checkOutAddress = async (req, res) => {
   try {
-    console.log('SUBMIT')
     const userId = res.locals.user._id;
-    console.log(userId);
     const name = req.body.name;
     const mobileNumber = req.body.mno;
     const address = req.body.address;

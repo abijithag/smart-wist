@@ -17,7 +17,6 @@ const getWishList = async (req, res) => {
 
   const addWishList = async (req, res) => {
 
-    console.log("add to wish listtt");
     let proId = req.body.proId;
     let userId = res.locals.user._id;
     wishListHelper.addWishList(userId, proId).then((response) => {

@@ -305,6 +305,7 @@ const changePaymentStatus =  (userId, orderId,razorpayId) => {
           },
         }
       ),
+        await updateStock(userId)
         Cart.deleteMany({ user: userId }).then(() => {
           resolve();
         });
@@ -341,15 +342,57 @@ const getOrderList = (page, limit) => {
 };
 
 
+const updateStock = async(userId)=>{
+
+const products = await Cart.findOne({user:userId})
+const cartProducts = products.cartItems
+for(const cartProduct of cartProducts ){
+  const productId = cartProduct.productId;
+  const quantity = cartProduct.quantity;
+
+  const product = await Product.findOne({_id:productId})
+
+  if(product.stock < cartProduct.quantity ){
+    return false
+  }
+
+  await Product.updateOne({_id:productId},
+    {$inc:{stock:-quantity}}
+    )
+
+}
+return true
+}
+
+
+const checkStock = async(userId)=>{
+
+  const products = await Cart.findOne({user:userId})
+  const cartProducts = products.cartItems
+  for(const cartProduct of cartProducts ){
+    const productId = cartProduct.productId;
+  
+    const product = await Product.findOne({_id:productId})
+  
+    if(product.stock < cartProduct.quantity ){
+      return false
+    }
+  
+  }
+  return true
+  }
+
 
 module.exports = {
     placeOrder,
     findOrder,
     cancelOrder,
-    totalCheckOutAmount,
+    totalCheckOutAmount, 
     generateRazorpay,
     verifyPayment,
     changePaymentStatus,
-    getOrderList
+    getOrderList,
+    updateStock,
+    checkStock
 
 }

@@ -158,6 +158,9 @@
 								<td>
 									<p>₹ <%=orders[0].totalPrice%></p>
 								</td>
+								<td>
+									<a href="/invoice?id=<%=orders[0]._id%>" class="btn btn-primary">Download Invoice</a>
+								</td>
 							</tr>
 						</tbody>
 					</table>
@@ -165,6 +168,7 @@
 			</div>
 		</div>
 	</section>
+
 	<!--================End Order Details Area =================-->
 
 	<!-- start footer Area -->

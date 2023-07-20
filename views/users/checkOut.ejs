@@ -325,7 +325,17 @@
         }).then(() => {
           location.href = '/'
         })
-      } else {
+      }else if (response.status== "OrderFailed") {
+        Swal.fire({
+          title: 'Order Failed!',
+          text: 'Your Product is Out of Stock .Please Check after some time',
+          icon: 'error',
+          timer: 5000
+        }).then(() => {
+          location.href = '/'
+        })
+      }
+       else {
         try {
           razorpay(response)
           console.log(response, '1');

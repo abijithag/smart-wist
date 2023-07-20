@@ -29,6 +29,9 @@ const loadProducts = async(req,res)=>{
     if(req.body.price<=0){
       return res.render("addProduct", { message: "Product Price Should be greater than 0",category:categories });
     }
+    if(req.body.stock<=0 || req.body.stock.trim().length === 0 ){
+      return res.render("addProduct", { message: "Stock  Should be greater than 0",category:categories });
+    }
 
       const images = req.files.map(file => file.filename);
       await productHelper.createProduct(req.body,images)
@@ -105,6 +108,9 @@ const loadProducts = async(req,res)=>{
     if(req.body.price<=0){
       return res.render("updateProduct", { message: "Product Price Should be greater than 0",product:productData,category:categories });
     }
+    if(req.body.stock<=0 || req.body.stock.trim().length === 0 ){
+      return res.render("updateProduct", { message: "Product Price Should be greater than 0",product:productData,category:categories });
+    }
         const images = req.files.map(file => file.filename);
         const updatedImages = images.length > 0 ? images : productData.images;
         await productHelper.updateProduct(req.body,updatedImages)
@@ -118,7 +124,6 @@ const loadProducts = async(req,res)=>{
     try{
       const id = req.query.id
       const product = await Product.findOne({ _id : id }).populate('category')
-      console.log(product.isProductListed);
       if(product.isProductListed == true && product.isListed == true){
         res.render('product',{product : product})
     }else{
@@ -130,7 +135,8 @@ const loadProducts = async(req,res)=>{
         
     catch(error){
         console.log(error);
-        res.send({ success: false, error: error.message });
+        res.redirect('/error-500')
+
  }
 
 }

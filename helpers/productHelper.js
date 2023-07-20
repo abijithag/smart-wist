@@ -12,6 +12,7 @@ const createProduct = (data,images) => {
       description:data.description,
       images:images,
       category:data.category,
+      stock:data.stock,
       price:data.price
     });
 
@@ -75,6 +76,7 @@ const reListProduct = (query) => {
               description: data.description,
               category: data.category,
               images: images,
+              stock:data.stock,
               price: data.price
             }
           }

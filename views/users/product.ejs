@@ -70,8 +70,19 @@
 						<h3><%=product.name%></h3>
 						<h2><i class="fa fa-inr" aria-hidden="true"></i> <%=product.price%></h2>
 						<ul class="list">
-							<li><a class="active" href="#"><span>Category</span> :<%=product.category.name%></a></li>
-							<li><a href="#"><span>Availibility</span> : In Stock</a></li>
+							<li><a class= href="#"><span>Category</span> :<%=product.category.name.toUpperCase()%></a></li>
+							<% if (product.stock <= 0) { %>
+								<li><a href="#"><span>Availability</span><span style="color: red; font-weight: bolder;">: Out of Stock</span></a></li>
+							  <% } else if (product.stock <= 5) { %>
+								<li><a href="#"><span>Availability</span>: In Stock</a></li>
+								<span style="color: red;">Hurry,Only <%= product.stock %>   items Remaining</span>
+							  <% } else { %>
+								<li><a href="#"><span>Availability</span>: In Stock</a></li>
+							  <% } %>
+							  
+
+
+
 						</ul>
 						<p><%=product.description%></p>
 						
@@ -419,9 +430,8 @@
 		  $.ajax({
 			url: '/addToCart/' + proId,
 			method: 'POST',
-	  
 			success: (response) => {
-			  if (response.status) {
+			  if (response.status==true) {
 				Swal.fire({
 				  title: 'Added To Cart',
 				  text: 'Your Product has been added to Cart',
@@ -429,6 +439,13 @@
 				  timer: 5000
 				})
 				
+			  }else if(response.status=='outOfStock'){
+				Swal.fire({
+				  title: 'Out of Stock',
+				  text: 'Product Out Of Stock',
+				  icon: 'error',
+				  timer: 5000
+				})
 			  }
 			}
 		  })

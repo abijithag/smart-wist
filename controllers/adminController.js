@@ -222,7 +222,6 @@ const blockUser = async(req,res)=>{
 const unBlockUser = async(req,res)=>{
   try {
     const id = req.body.userId
-    console.log(id);
     await User.findByIdAndUpdate({_id:id},{$set:{is_blocked:false}})
     res.send({status:true})
   } catch (error) {
@@ -266,7 +265,6 @@ const updateUser = async(req,res)=>{
 const orderDetails = async (req,res)=>{
     try {
       const id = req.query.id
-      console.log(id);
       adminHelper.findOrder(id).then((orders) => {
         const address = orders[0].shippingAddress
         const products = orders[0].productDetails 
@@ -309,7 +307,6 @@ const logout = (req,res) =>{
 const changeStatus = async(req,res)=>{
   const orderId = req.body.orderId
   const status = req.body.status
-  console.log(orderId)
   adminHelper.changeOrderStatus(orderId, status).then((response) => {
     console.log(response);
     res.json(response);

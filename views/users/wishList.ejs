@@ -223,7 +223,7 @@
 			method: 'POST',
 	  
 			success: (response) => {
-			  if (response.status) {
+			  if (response.status==true) {
 				Swal.fire({
 				  title: 'Added To Cart',
 				  text: 'Your Product has been added to Cart',
@@ -231,6 +231,13 @@
 				  timer: 5000
 				})
 				
+			  }else if(response.status=='outOfStock'){
+				Swal.fire({
+				  title: 'Out of Stock',
+				  text: 'Product Out Of Stock',
+				  icon: 'error',
+				  timer: 5000
+				})
 			  }
 			}
 		  })

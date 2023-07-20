@@ -106,14 +106,17 @@ userRoute.post('/verifyPayment',orderController.verifyPayment)
 userRoute.post('/paymentFailed',orderController.paymentFailed)  
 
 userRoute.post('/add-to-wishlist',wishlistController.addWishList)
-userRoute.get('/wishlist',validate.requireAuth,wishlistController.getWishList)
+userRoute.get('/wishlist',validate.requireAuth,block.checkBlocked,wishlistController.getWishList)
 userRoute.delete('/remove-product-wishlist',wishlistController.removeProductWishlist)
+
+
 //error
 
 userRoute.get('/error-404',userController.error404)
 userRoute.get('/error-403',userController.error403)
 userRoute.get('/error-500',userController.error500)
 
+userRoute.get('/invoice',orderController.downloadInvoice)
 
 
 module.exports = userRoute 

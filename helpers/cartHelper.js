@@ -3,7 +3,7 @@ const cartModel = require('../models/cartModel');
 const Cart = require('../models/cartModel');
 const { resolve } = require('path');
 const Product = require('../models/productModel')
-
+const { ObjectId } = require("mongodb");
 
 
 
@@ -14,14 +14,25 @@ const addCart = async (productId,userId)=>{
         quantity:1,
         total:product.price
     }
-    console.log(productObj)
 
     try {
-        return new Promise((resolve,reject)=>{ 
+        return new Promise(async(resolve,reject)=>{
+          console.log(productId);
+          const quantity = await Cart.aggregate([
+            { $match: { user: userId.toString() } },
+            { $unwind: "$cartItems" },
+            { $match: { 'cartItems.productId': new ObjectId(productId) } },
+            {$project:{'cartItems.quantity':1}}
+
+          ]);
+
             Cart.findOne({user:userId}).then(async(cart)=>{
                 if(cart){
                     const productExist = await Cart.findOne({ user:userId,"cartItems.productId": productId });
+
                     if(productExist){
+                      if(product.stock-quantity[0].cartItems.quantity > 0){
+
                         Cart.updateOne(
                             {user:userId,"cartItems.productId":productId},{
                                 $inc:{"cartItems.$.quantity":1,
@@ -32,12 +43,14 @@ const addCart = async (productId,userId)=>{
                               }
                             }
                         ).then((response)=>{
-                            resolve({ response, status: false });
+                            resolve({ response, status: true });
 
                         })
-                    
+                      }else{
+                        resolve({ status: 'outOfStock' });
+                      }
                     }else{
-                      console.log("new Product")
+                      if(product.stock > 0){
                         Cart.updateOne(
                             {user:userId},{$push:{cartItems:productObj},
                           $inc:{cartTotal:product.price}
@@ -46,8 +59,13 @@ const addCart = async (productId,userId)=>{
                             resolve({status:true});
                         })
 
+                    }else{
+                      resolve({ status: 'outOfStock' });
                     }
+                  }
                 }else{
+                  if(product.stock > 0){
+
                     const newCart = await Cart({
                         user:userId,
                         cartItems:productObj,
@@ -56,9 +74,14 @@ const addCart = async (productId,userId)=>{
                     await newCart.save().then((response)=>{
                         resolve({status:true})
                     })
+
+                }else{
+                  resolve({ status: 'outOfStock' });
                 }
+              }
                 
             })
+        
         })
         
     } catch (error) {
@@ -66,6 +89,7 @@ const addCart = async (productId,userId)=>{
         
     }
 }
+
 const updateQuantity = async(data) => {
     const cartId = data.cartId;
     const proId = data.proId;
@@ -73,6 +97,16 @@ const updateQuantity = async(data) => {
     const count = data.count;
     const quantity = data.quantity;
     const product = await Product.findOne({_id:proId})
+
+    const quantitySingle = await Cart.aggregate([
+      { $match: { user: userId.toString() } },
+      { $unwind: "$cartItems" },
+      { $match: { 'cartItems.productId': new ObjectId(proId) } },
+      {$project:{'cartItems.quantity':1}}
+
+    ]);
+
+
 
     try {
       return new Promise(async (resolve, reject) => {
@@ -91,29 +125,37 @@ const updateQuantity = async(data) => {
             resolve({ status: true });
           });
         } else {
-          Cart.updateOne(
-            { _id: cartId, "cartItems.productId": proId },
-            {
-              $inc: { "cartItems.$.quantity": count ,
-              "cartItems.$.total":product.price*count,
-              cartTotal:product.price * count
-            },
-            }
+          if(product.stock-quantity < 1 && count==1){
+            resolve({ status: 'outOfStock' });
 
-          )
-      
-          
-        .then(() => {
-            Cart.findOne(
+
+          }else{
+            
+            Cart.updateOne(
               { _id: cartId, "cartItems.productId": proId },
-              { "cartItems.$": 1,cartTotal:1 }
-            ).then((cart) => { 
-              const newQuantity = cart.cartItems[0].quantity;
-              const newSubTotal = cart.cartItems[0].total;
-              const cartTotal = cart.cartTotal
-              resolve({ status: true, newQuantity: newQuantity,newSubTotal:newSubTotal,cartTotal:cartTotal});
-            });
-          }); 
+              {
+                $inc: { "cartItems.$.quantity": count ,
+                "cartItems.$.total":product.price*count,
+                cartTotal:product.price * count
+              },
+              }
+  
+            )
+        
+            
+          .then(() => {
+              Cart.findOne(
+                { _id: cartId, "cartItems.productId": proId },
+                { "cartItems.$": 1,cartTotal:1 }
+              ).then((cart) => { 
+                const newQuantity = cart.cartItems[0].quantity;
+                const newSubTotal = cart.cartItems[0].total;
+                const cartTotal = cart.cartTotal
+                resolve({ status: true, newQuantity: newQuantity,newSubTotal:newSubTotal,cartTotal:cartTotal});
+              });
+            }); 
+
+          }
         }
       });
     } catch (error) {
