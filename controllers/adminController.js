@@ -2,7 +2,6 @@ const Admin = require('../models/adminModel')
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken');
 const adminHelper = require('../helpers/adminHelper');
-const { response } = require('../routes/userRoute');
 const Order = require('../models/orderModel');
 const orderHelper = require('../helpers/orderHelper')
 const Product = require('../models/productModel')
@@ -33,10 +32,54 @@ const loadDashboard = async(req,res)=>{
         }
       }
 
-      
-
-
     ])
+
+
+    const categorySales = await Order.aggregate([
+      { $unwind: "$orders" },
+      { $unwind: "$orders.productDetails" },
+      {
+        $match: {
+          "orders.orderStatus": "Delivered",
+        },
+      },
+      {
+        $project: {
+          CategoryId: "$orders.productDetails.category",
+          totalPrice: {
+            $multiply: [
+              { $toDouble: "$orders.productDetails.productPrice" },
+              { $toDouble: "$orders.productDetails.quantity" },
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$CategoryId",
+          PriceSum: { $sum: "$totalPrice" },
+        },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      {
+        $unwind: "$categoryDetails",
+      },
+      {
+        $project: {
+          categoryName: "$categoryDetails.name",
+          PriceSum: 1,
+          _id: 0,
+        },
+      },
+    ]);
+
 
     const salesData = await Order.aggregate([
       { $unwind: "$orders" },
@@ -67,7 +110,7 @@ const loadDashboard = async(req,res)=>{
       { $unwind: "$orders" },
       {
         $match: {
-          "orders.orderStatus": "Delivered"  // Consider only completed orders
+          "orders.orderStatus": "Delivered"  
         }
       },
       {
@@ -97,7 +140,6 @@ const loadDashboard = async(req,res)=>{
     const onlinePay = await adminHelper.getOnlineCount()
     const walletPay = await adminHelper.getWalletCount()
     const codPay = await adminHelper.getCodCount()
-    const categorySales = await adminHelper.getCategorySales()
 
 
     const latestorders = await Order.aggregate([
@@ -111,7 +153,7 @@ const loadDashboard = async(req,res)=>{
 
       res.render('dashboard',{orders,productsCount,categoryCount,
         onlinePay,salesData,order:latestorders,salesCount,
-        walletPay,codPay})
+        walletPay,codPay,categorySales})
   } catch (error) {
       console.log(error)
   }

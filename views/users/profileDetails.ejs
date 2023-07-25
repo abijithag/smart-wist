@@ -138,6 +138,8 @@
               <li><a href="/profileOrderList">Orders</a></li>
               <li><a href="/ProfileAddress">Address</a></li>
               <li><a class="active" href="/profileDetails">Profile Details</a></li>
+              <li><a href="/wallet">Transactions</a></li>
+
             </ul>
             <section class="user-dashboard page-wrapper">
               <div class="container">
@@ -182,7 +184,7 @@
                           <div class="inside">
                             <div class="wallet-top">
                               <div class="card">
-                                <h1>MY WALLET</h1>
+                                <a href="/wallet"><h1>MY WALLET</h1></a>
                                 <h2>₹<%= user.wallet %>
                                 </h2>
                                 <span>
@@ -408,12 +410,15 @@
   
   // Close the password popup
   function closePasswordPopup() {
+
     var popup = document.getElementById("passwordPopup");
     popup.style.display = "none";
   }
   
   // Save the new password using AJAX
   function changePassword() {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+
     var newPassword = document.getElementById("newPassword").value.trim();
     var confirmPassword = document.getElementById("confirmPassword").value.trim();
     var messageBlock = document.getElementById("messageBlock");
@@ -421,6 +426,11 @@
     // Validate that the new password and confirm password match
     if (newPassword !== confirmPassword || newPassword === '') {
       messageBlock.innerText = "New password and confirm password do not match or cannot be empty.";
+      messageBlock.style.display = "block";
+      return;
+    }
+    if (!newPassword.match(passwordRegex)) {
+      messageBlock.innerText = "Password Should contain atleat 8 letters one number and a special chara.";
       messageBlock.style.display = "block";
       return;
     }

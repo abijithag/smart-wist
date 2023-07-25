@@ -112,16 +112,17 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xl-8 col-lg-12">
+                <div class="col-xl-6 col-lg-8">
                     <div class="card mb-4">
                         <article class="card-body">
-                            <h5 class="card-title">Sale statistics</h5>
-                            <canvas id="" height="217"></canvas>
+                            <h5 class="card-title">Category Sales</h5>
+                            <canvas id="myPieChart" height="100px"></canvas>
                         </article>
                     </div>
+                 
                     
                 </div>
-                <div class="col-xl-4 col-lg-12">
+                <div class="col-xl-6 col-lg-12">
                     <div class="card mb-4">
                         <article class="card-body">
                             <h5 class="card-title">Revenue Based on Payment Methods</h5>
@@ -218,6 +219,39 @@
             </div>
         </footer>
     </main>
+
+    <script>
+        // Sample data (replace this with your actual data)
+const datas = JSON.parse('<%- JSON.stringify(categorySales) %>');
+// Extracting labels and data for the chart
+const labels = datas.map(item => item.categoryName);
+const prices = datas.map(item => item.PriceSum);
+
+// Generate a random color for each slice of the pie chart
+const getRandomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16);
+
+// Creating the pie chart
+const contexts = document.getElementById('myPieChart').getContext('2d');
+const myPieChart = new Chart(contexts, {
+  type: 'pie',
+  data: {
+    labels: labels,
+    datasets: [{
+      data: prices,
+      backgroundColor: datas.map(item => getRandomColor()),
+      borderColor: 'white',
+      borderWidth: 1
+    }]
+  },
+  options: {
+    title: {
+      display: true,
+      text: 'Pie Chart'
+    }
+  }
+});
+
+    </script>
 
     <script>
         const salesData = JSON.parse('<%- JSON.stringify(salesData) %>');

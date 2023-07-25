@@ -81,7 +81,7 @@ const postCheckOut  = async (req, res) => {
     const userId = res.locals.user._id;
     const data = req.body;
     const couponCode = data.couponCode
-    // await couponHelper.addCouponToUser(couponCode, userId);
+    await couponHelper.addCouponToUser(couponCode, userId);
 
 
     try { 

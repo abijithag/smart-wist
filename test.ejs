@@ -281,3 +281,131 @@
       }
     });
   </script>
+
+
+
+
+
+
+
+
+
+
+<style>
+  /* Keep your existing CSS styles */
+  .img_zoom_container {
+    position: relative;
+    overflow: hidden;
+    cursor: zoom-in;
+  }
+
+  .img_zoom {
+    transition: transform 0.9s ease-in-out;
+    transform-origin: center center;
+  }
+
+  /* Remove the background-image style from figure.zoom */
+  figure.zoom {
+    background-position: 50% 50%;
+    position: relative;
+    margin: 100px auto;
+    border: 5px solid white;
+    box-shadow: -1px 5px 15px black;
+    height: 350px;
+    width: 500px;
+    overflow: hidden;
+    cursor: zoom-in;
+  }
+
+  /* Add a rule to hide the img inside the figure */
+  figure.zoom img {
+    display: none;
+  }
+   .img_zoom_container {
+    position: relative;
+    overflow: hidden;
+    cursor: zoom-in;
+  }
+
+  .img_zoom {
+    transition: transform 0.9s ease-in-out;
+    transform-origin: center center;
+  }
+</style>
+
+<div class="product_image_area ">
+  <div class="container">
+    <div class="row s_product_inner">
+   
+     <div class="col-lg-6">
+        <div class="s_Product_carousel">
+          {{#each product.images}}
+          <div class="single-prd-item img_zoom_container">
+            <figure class="zoom" onmousemove="zoom(event)" onmouseout="resetZoom(event)">
+            <img class="img-fluid" src="/product-images/{{this}}" alt="Image">
+            </figure>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+<div class="col-lg-5 offset-lg-1">
+  <div class="s_product_text">
+    <h3>{{product.productName}}</h3>
+    <h2>₹{{product.productPrice}}</h2>
+    <ul class="list">
+      <li><a class="active" href="#"><span>Category</span> : {{category.categoryName}}</a></li>
+      {{#if (gt product.productQuantity 0)}}
+      <li><a href="#"><span>Availability</span> : In Stock</a></li>
+      {{else}}
+      <li><a href="#"><span>Availability</span> : Out of Stock</a></li>
+      {{/if}}
+    </ul>
+    <p>{{product.productDescription}}</p>
+    <div class="card_area d-flex align-items-center">
+      <a href="" class="primary-btn" onclick="addToCart('{{product._id}}'); return false;">Add to Cart</a>
+      <a class="icon_btn" onclick="addToWishlist('{{product._id}}'); return false;"><i class="lnr lnr-heart"></i></a>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="popupModal" tabindex="-1" role="dialog" aria-labelledby="popupModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="popupModalLabel">Message</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="popupMessage"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/javascripts/singleproduct.js"></script>
+
+<script>
+  function zoom(event) {
+    var zoomer = event.currentTarget;
+    var offsetX = event.offsetX ? event.offsetX : event.touches[0].pageX;
+    var offsetY = event.offsetY ? event.offsetY : event.touches[0].pageY;
+    var x = (offsetX / zoomer.offsetWidth) * 100;
+    var y = (offsetY / zoomer.offsetHeight) * 100;
+    zoomer.querySelector('img').style.transform = 'scale(2.0)';
+    zoomer.querySelector('img').style.transformOrigin = x + '% ' + y + '%';
+  }
+
+  function resetZoom(event) {
+    var zoomer = event.currentTarget;
+    zoomer.querySelector('img').style.transform = 'none';
+  }
+</script>

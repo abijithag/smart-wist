@@ -100,6 +100,22 @@
 						</li>
 						<% }) %>								
 					</ul>
+					<div class="head">Price Sort</div>
+					<ul class="main-categories">
+							<li class="main-nav-list"><a class="nav-link" href="/categoryShop?sort=price_asc&id=<%=categoryId%>"><span class="lnr lnr-arrow-right"></span>Low --> high</a></li>
+							<li class="main-nav-list"><a class="nav-link" href="/categoryShop?sort=price_desc&id=<%=categoryId%>"><span class="lnr lnr-arrow-right"></span>HIgh --> Low</a></li>
+						</li>
+					</ul>
+					<div class="head">Price Filter</div>
+					<ul class="main-categories">
+							<li class="main-nav-list"><a class="nav-link" href="/categoryShop?minPrice=1&&maxPrice=1000"><span class="lnr lnr-arrow-right"></span>₹ 1 to ₹ 1000</a></li>
+							<li class="main-nav-list"><a class="nav-link" href="/categoryShopminPrice=1000&&maxPrice=5000"><span class="lnr lnr-arrow-right"></span>₹ 1000 to ₹ 5000</a></li>
+							<li class="main-nav-list"><a class="nav-link" href="/categoryShop?minPrice=5000&&maxPrice=10000"><span class="lnr lnr-arrow-right"></span>₹ 5000 to ₹ 10000</a></li>
+							<li class="main-nav-list"><a class="nav-link" href="/categoryShop?minPrice=10000&&maxPrice=100000"><span class="lnr lnr-arrow-right"></span>Above ₹ 10000</a></li>
+
+
+						</li>
+					</ul>
 				</div>
 				
 			</div>
@@ -183,6 +199,29 @@
 							<option value="1">Show 12</option>
 						</select>
 					</div>
+
+
+					<div class="pagination">
+						<% if (currentPage > 1) { %>
+						  <a href="/categoryShop?page=<%= currentPage - 1 %>&id=<%=categoryId%>" class="prev-arrow">
+							<i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+						  </a>
+						<% } %>
+					  
+						<% for (let i = 1; i <= totalPages; i++) { %>
+						  <% if (i === currentPage) { %>
+							<a href="/categoryShop?page=<%= i %>&id=<%=categoryId%>" class="active"><%= i %></a>
+						  <% } else { %>
+							<a href="/categoryShop?page=<%= i %>&id=<%=categoryId%>"><%= i %></a>
+						  <% } %>
+						<% } %>
+					  
+						<% if (currentPage < totalPages) { %>
+						  <a href="/categoryShop?page=<%= currentPage + 1 %>&id=<%=categoryId%>" class="next-arrow">
+							<i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+						  </a>
+						<% } %>
+						</div>
 					
 					  
 				</div>

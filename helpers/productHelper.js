@@ -2,6 +2,7 @@ const Product = require('../models/productModel')
 // const Category = require('../models/categoryModel');
 // const path = require('path');
 // const multer = require('multer');
+const{ObjectId} = require('mongodb')
 
 
 const createProduct = (data,images) => {
@@ -69,7 +70,7 @@ const reListProduct = (query) => {
   const updateProduct = async (data, images) => {
     try {
         const productData = await Product.updateOne(
-          { _id: data.id },
+          { _id: new ObjectId(data.id) },
           {
             $set: {
               name: data.name,

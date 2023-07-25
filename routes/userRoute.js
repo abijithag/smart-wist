@@ -84,6 +84,7 @@ userRoute.post('/updateAddress',profileController.editAddress)
 userRoute.post('/editPassword',userController.editPassword)
 userRoute.post('/editInfo',userController.editInfo)
 userRoute.get('/profileAddress',block.checkBlocked,validate.requireAuth,profileController.profileAdress)
+userRoute.get('/wallet',profileController.walletTransaction)
 
 //checkout
 userRoute.get('/checkOut',block.checkBlocked,validate.requireAuth,orderController.checkOut)

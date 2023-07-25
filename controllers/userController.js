@@ -355,26 +355,24 @@ const editInfo = async (req, res) => {
     }
   };
   
-  //editPassword
+
+
   const editPassword = async (req, res) => {
     try {
-      const newPass = req.body.newPass;
-      const confPass = req.body.confPass;
-      userId = res.locals.user._id;
-  
-      if (newPass === confPass) {
-        const spassword = await securePassword(confPass);
+      const newPass = req.body.newPassword;
+      // const confPass = req.body.confPass;
+      const userId = res.locals.user._id;
+        const spassword = await securePassword(newPass);
   
         const result = await User.updateOne(
-          { _id: userId }, 
-          { $set: { password: spassword } } 
+          { _id: userId },
+          { $set: { password: spassword } }
         );
-        res.redirect('/profile')
-      }
+  
+        res.send({status:true});
+      
     } catch (error) {
       console.log(error.message);
-      res.redirect('/error-500')
-
     }
   };
 
@@ -384,19 +382,27 @@ const editInfo = async (req, res) => {
         const  categoryId = req.query.id
         const category = await Category.find({ })
         const page = parseInt(req.query.page) || 1; 
-        const limit = 6;
+        const limit = 3;
         const skip = (page - 1) * limit;
         const totalProducts = await Product.countDocuments({ category:categoryId,$and: [{ isListed: true }, { isProductListed: true }]}); // Get the total number of products
         const totalPages = Math.ceil(totalProducts / limit);
+        const sortQuery = req.query.sort || 'default';
 
         const categories = await Category.find({ })
+        let sortOption = {};
+      if (sortQuery === 'price_asc' ||sortQuery === 'default' ) {
+        sortOption = { price: 1 }; 
+      } else if (sortQuery === 'price_desc') {
+        sortOption = { price: -1 }; 
+      }
          
         const product = await Product.find({ category:categoryId,$and: [{ isListed: true }, { isProductListed: true }]})
         .skip(skip)
+        .sort(sortOption)
         .limit(limit)
         .populate('category')
 
-        res.render('categoryShop',{product,category, currentPage: page, totalPages })
+        res.render('categoryShop',{product,category, currentPage: page, totalPages,categoryId })
     }
     catch(err){
         console.log('category page error',err);
@@ -437,18 +443,6 @@ const error500 = async(req,res)=>{
 }
 
 
-const postReview = async(req,res)=>{
-  try {
-    const review = {
-
-    }
-
-    
-  } catch (error) {
-    console.log(error.message);
-  }
-
-}
 
 module.exports = {
     homeLoad,
@@ -472,6 +466,6 @@ module.exports = {
     error404,
     error403,
     error500,
-    postReview
+    
 
 }

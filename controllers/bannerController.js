@@ -50,29 +50,14 @@ const editBanner=(req, res) => {
 
 ///update product list
 
-const updateBanner = async (req, res) => {
-    try {
 
-    bannerHelper.updateBannerHelper(req.body, req?.file?.filename).then(( response) => {
-        if (response) {
-            res.redirect("/admin/banner");
-        } else {
-            res.status(505);
-        }
-    });}
-  catch (error) {
-    console.log(error.message);
-  }
-
-}
 
 module.exports = {
     bannerList,
     addBannerGet,
     addBannerPost,
     deleteBanner,
-    editBanner,
-    updateBanner
+    editBanner
 
 
 }

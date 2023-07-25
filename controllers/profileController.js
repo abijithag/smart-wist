@@ -1,15 +1,13 @@
-const Cart = require("../models/cartModel");
-const Product = require("../models/productModel");
 const Address = require("../models/AddressModel");
 const profiletHelper = require("../helpers/profileHelper");
-const Order = require('../models/orderModel');
-
+const User = require("../models/userModel")
 
 const loadDashboard = async(req,res)=>{
   try {
     res.render('dashboard')
   } catch (error) {
     console.log(error.message);
+    res.redirect('/error-500')
   }
 }
 
@@ -20,6 +18,7 @@ const profile = async (req, res) => {
     res.render("profileDetails", { user, arr });
   } catch (error) {
     console.log(error.message);
+    res.redirect('/error-500')
   }
 };
 
@@ -37,6 +36,7 @@ const profileAdress = async (req, res) => {
     
   } catch (error) {
     console.log(error.message);
+    res.redirect('/error-500')
   }
 };
 
@@ -75,6 +75,7 @@ const submitAddress = async (req, res) => {
     res.redirect("/profile"); // Redirect to the profile page after saving the address
   } catch (error) {
     console.log(error.message);
+    res.redirect('/error-500')
   }
 };
 
@@ -158,6 +159,26 @@ const checkOutAddress = async (req, res) => {
   }
 };
 
+const walletTransaction = async(req,res)=>{
+  try {
+    const user = res.locals.user
+    // const userData= await User.findOne({_id:user._id})
+    const wallet = await User.aggregate([
+      {$match:{_id:user._id}},
+      {$unwind:"$walletTransaction"},
+      {$sort:{"walletTransaction.date":-1}},
+      {$project:{walletTransaction:1,wallet:1}}
+    ])
+
+    res.render('walletTransaction',{wallet})
+    
+  } catch (error) {
+    console.log(error.message);
+  }
+
+
+}
+
 
 
 
@@ -169,6 +190,7 @@ module.exports = {
   deleteAddress,
   checkOutAddress,
   loadDashboard,
-  profileAdress
+  profileAdress,
+  walletTransaction
   
 };

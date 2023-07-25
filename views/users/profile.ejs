@@ -502,12 +502,12 @@
 
     <div id="popupp" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #fff; border: 1px solid #ccc; padding: 20px; z-index: 9999; display: none;">
       <button onclick="closePassPopup()" style="position: absolute; top: 10px; right: 10px; background-color: transparent; border: none; font-size: 20px; cursor: pointer;">&times;</button>
-      <form method="post" action="/editPassword" onsubmit="return validatePasswords()">
+      <form method="post" action="/editPassword" >
         <label for="newPass">New Password:</label>
-        <input type="password" id="newPass" name="newPass" required>
+        <input type="password" id="newPass" name="newPass">
         <br><br>
         <label for="confPass">Confirm Password:</label>
-        <input type="password" id="confPass" name="confPass" required>
+        <input type="password" id="confPass" name="confPass">
         <br><br>
         <button type="submit">Save</button>
       </form>

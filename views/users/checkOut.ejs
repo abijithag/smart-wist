@@ -228,22 +228,150 @@
     </div>
     <div class="overlay-pop-up"></div>
 
-    <div class="popup-wrapper">
+    <!-- <div class="popup-wrapper">
         <div class="popup">
             <button class="close-button"></button>
-            <form class="popup-form" action="/checkOutAddress" method="POST">
+            <form class="popup-form" action="/checkOutAddress" method="POST" id="myForm">
                 <h2 class="popup-form__title">Add Address</h2>
-                <input type="text" class="popup-form__input" placeholder="Name" name="name">
-                <input type="number" class="popup-form__input" placeholder="Mobile Number" name="mno">
-                <textarea class="popup-form__input" placeholder="House Address" name="address"></textarea>
-                <input type="text" class="popup-form__input" placeholder="City" name="city">
-                <input type="text" class="popup-form__input" placeholder="Street" name="locality">
-                <input type="number" class="popup-form__input" placeholder="PostalCode/PIN" name="pincode">
-                <input type="text" class="popup-form__input" placeholder="state" name="state">
+                <input type="text" class="popup-form__input" placeholder="Name" name="name" id="name">
+                <span id="nameError"></span>
+                <input type="number" class="popup-form__input" placeholder="Mobile Number" name="mno" id="mno">
+                <textarea class="popup-form__input" placeholder="House Address" name="address" id="address"></textarea>
+                <input type="text" class="popup-form__input" placeholder="City" name="city" id="city">
+                <input type="text" class="popup-form__input" placeholder="Street" name="locality" id="locality">
+                <input type="number" class="popup-form__input" placeholder="PostalCode/PIN" name="pincode" id="pincode">
+                <input type="text" class="popup-form__input" placeholder="state" name="state" id="state">
                 <button type="submit" id="btn" class="popup-form__submit">ADD</button>
             </form>
         </div>
-    </div>
+    </div> -->
+
+<!-- <script>
+  const myform = document.getElementById("myForm")
+
+
+  let regex = /^(?!\s*$).+/;
+  let name = document.getElementById("name");
+
+
+
+  let nameError = document.getElementById('nameError')
+
+  function nameValidation() {
+          let nameValue= name.value;
+          if (nameValue.length == 0) {
+            nameError.innerHTML = "Title is required";
+            nameError.style.color = "red";
+            nameError.style.border = "solid 2px red";
+            return false;
+          }
+          if (!nameValue.match(regex)) {
+            nameError.innerHTML = "Write valid Title";
+            nameError.style.color = "red";
+            name.style.border = "solid 2px red";
+            return false;
+          }
+          nameError.innerHTML = "";
+          nameError.style.color = "green";
+          nameError.style.border = "solid 2px green";
+          return true;
+        }
+
+
+        myform.addEventListener("submit", (event) => {
+          event.preventDefault();
+          if (!nameValidation()) {
+            return false;
+          } else {
+            myform.submit();
+          }
+        });
+
+
+
+  
+
+
+</script> -->
+
+<div class="popup-wrapper">
+  <div class="popup">
+      <button class="close-button"></button>
+      <form class="popup-form" action="/checkOutAddress" method="POST" id="myForm" onsubmit="return validateForm()">
+          <h2 class="popup-form__title">Add Address</h2>
+          <input type="text" class="popup-form__input" placeholder="Name" name="name" id="name">
+          <span id="nameError"></span>
+          <input type="tel" class="popup-form__input" placeholder="Mobile Number" name="mno" id="mno">
+          <span id="mnoError"></span>
+          <textarea class="popup-form__input" placeholder="House Address" name="address" id="address"></textarea>
+          <input type="text" class="popup-form__input" placeholder="City" name="city" id="city">
+          <input type="text" class="popup-form__input" placeholder="Street" name="locality" id="locality">
+          <input type="text" class="popup-form__input" placeholder="PostalCode/PIN" name="pincode" id="pincode">
+          <input type="text" class="popup-form__input" placeholder="State" name="state" id="state">
+          <button type="submit" id="btn" class="popup-form__submit">ADD</button>
+      </form>
+  </div>
+</div>
+
+
+<script>
+  function validateForm() {
+      const name = document.getElementById("name").value.trim();
+      const mobileNumber = document.getElementById("mno").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const city = document.getElementById("city").value.trim();
+      const locality = document.getElementById("locality").value.trim();
+      const pincode = document.getElementById("pincode").value.trim();
+      const state = document.getElementById("state").value.trim();
+
+      // Check if the name is not empty
+      if (name === "") {
+        alert("Please enter valid Name");
+          return false;
+      }
+
+      // Check if the mobile number is a valid number with at least 10 digits
+      if (isNaN(mobileNumber) || mobileNumber.length < 10) {
+        alert("Please enter valid mobile Number .");
+          return false;
+      }
+
+      // Check if the address is not empty
+      if (address === "") {
+          alert("Please enter your house address.");
+          return false;
+      }
+
+      // Check if the city is not empty
+      if (city === "") {
+          alert("Please enter your city.");
+          return false;
+      }
+
+      // Check if the street/locality is not empty
+      if (locality === "") {
+          alert("Please enter your street/locality.");
+          return false;
+      }
+
+      // Check if the postal code/PIN is not empty and is a valid number
+      if (pincode === "" || isNaN(pincode)) {
+          alert("Please enter a valid postal code/PIN.");
+          return false;
+      }
+
+      // Check if the state is not empty
+      if (state === "") {
+          alert("Please enter your state.");
+          return false;
+      }
+
+      // If all validations pass, the form will be submitted
+      return true;
+  }
+</script>
+
+
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="../user-assets/js/vendor/jquery-2.2.4.min.js"></script>

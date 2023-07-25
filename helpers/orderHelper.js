@@ -83,7 +83,23 @@ const placeOrder = (data,user)=>{
       
                   await userData.save();
                   (status = "Success"), (orderStatus = "Placed");
+
+                  const walletTransaction = {
+                    date:new Date(),
+                    type:"Debit",
+                    amount:data.total,
+
+                  }
+                  const walletupdated = await User.updateOne(
+                    { _id: user },
+                    {
+                      $push: { walletTransaction: walletTransaction },
+                    }
+                  )
+           
+
                 }
+             
               }else {
                 (status = "Pending"), (orderStatus = "Pending");
               }
