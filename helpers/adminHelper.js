@@ -103,7 +103,6 @@ const getAllOrder  = () => {
 
           }
         }else if(order.paymentMethod=='wallet'||order.paymentMethod=='razorpay'){
-                    console.log(status);
 
           if(status == 'Cancel Accepted'){
             Order.updateOne(

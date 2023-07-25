@@ -256,7 +256,7 @@ const blockUser = async(req,res)=>{
     await User.findByIdAndUpdate({_id:id},{$set:{is_blocked:true}})
     res.send({status:true})
   } catch (error) {
-    console.log(error)
+    console.log(error.message)
   }
 }
 

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-mongoose.connect('mongodb://127.0.0.1:27017/Smart_Wrist')
+mongoose.connect('mongodb+srv://vinayakvenugopal2000:qsIPxcs5HK8UWUPg@smartwrist.gbqg6mz.mongodb.net/')
 
 const express = require('express');
 const app = express();
