@@ -106,16 +106,7 @@
 							<li class="main-nav-list"><a class="nav-link" href="/categoryShop?sort=price_desc&id=<%=categoryId%>"><span class="lnr lnr-arrow-right"></span>HIgh --> Low</a></li>
 						</li>
 					</ul>
-					<div class="head">Price Filter</div>
-					<ul class="main-categories">
-							<li class="main-nav-list"><a class="nav-link" href="/categoryShop?minPrice=1&&maxPrice=1000"><span class="lnr lnr-arrow-right"></span>₹ 1 to ₹ 1000</a></li>
-							<li class="main-nav-list"><a class="nav-link" href="/categoryShopminPrice=1000&&maxPrice=5000"><span class="lnr lnr-arrow-right"></span>₹ 1000 to ₹ 5000</a></li>
-							<li class="main-nav-list"><a class="nav-link" href="/categoryShop?minPrice=5000&&maxPrice=10000"><span class="lnr lnr-arrow-right"></span>₹ 5000 to ₹ 10000</a></li>
-							<li class="main-nav-list"><a class="nav-link" href="/categoryShop?minPrice=10000&&maxPrice=100000"><span class="lnr lnr-arrow-right"></span>Above ₹ 10000</a></li>
-
-
-						</li>
-					</ul>
+					
 				</div>
 				
 			</div>
@@ -166,7 +157,7 @@
 											<span class="ti-bag"></span>
 											<p class="hover-text">add to bag</p>
 										</a>
-										<a href="" class="social-info">
+										<a onclick="addToWishList('<%=item._id%>')" class="social-info">
 											<span class="lnr lnr-heart"></span>
 											<p class="hover-text">Wishlist</p>
 										</a>
@@ -261,6 +252,38 @@
 			}
 		  })
 		}
+		function addToWishList(proId) {
+		event.preventDefault();
+    $.ajax({
+      url: '/add-to-wishlist',
+      method: 'POST',
+      data: {
+        proId: proId
+      },
+      success: (response) => {
+        if (response) {
+          // Product added to Wishlist successfully
+		  Swal.fire({
+			position: 'centre',
+			icon: 'success',
+			title: 'Product added to wish list',
+			showConfirmButton: false,
+			timer: 1500
+			})
+          
+
+        } else {
+          // Error adding product to Wishlist
+          Swal.fire({
+            icon: 'error',
+            title: 'Product already exist in Wishlist',
+            timer: 2000
+          });
+
+        }
+      }
+    })
+  }
 	</script>
 
 

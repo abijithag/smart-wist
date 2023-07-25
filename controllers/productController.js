@@ -83,7 +83,7 @@ const loadProducts = async(req,res)=>{
     try {
       const categories = await Category.find({})
       const id = req.query.id;
-      const productData = await Product.findById({_id:id})
+      const productData = await Product.findById({_id:id}).populate('category')
       res.render('updateProduct',{product:productData,category:categories})
       
     } catch (error) {

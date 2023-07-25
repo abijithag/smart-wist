@@ -58,8 +58,11 @@
                                         <label class="form-label">Category</label>
                                         
                                         <select class="form-select" name="category">
+                                            <option value="<%= product.category.toString()%>"><%= product.category.name %></option>
                                             <% category.forEach(function(category) { %>
+                                            <% if (category.name !== product.category.name) { %>
                                             <option value="<%= category._id %>"><%= category.name %></option>
+                                            <% } %>
                                             <% }); %>
                                         </select>
                                     </div>
