@@ -192,7 +192,7 @@ const forgotPasswordOtp = async(req, res)=>{
         res.render('forgotPassword',{message:"User Not Registered"})
     }else{
         const OTP = otpHelper.generateOtp()
-        // await otpHelper.sendOtp(user.mobile,OTP)
+        await otpHelper.sendOtp(user.mobile,OTP)
         console.log(`Forgot Password otp is --- ${OTP}`) 
         req.session.otp = OTP
         req.session.email = user.email

@@ -24,6 +24,12 @@ const sendOtp = async (mobileNumber, otp) => {
     console.log(error.message);
     throw new Error("Failed to send OTP");
   }
-};
+}; 
+
+// Assuming you've already set up your Twilio client as 'client'
+
+
+
+
 
 module.exports = { generateOtp, sendOtp };
