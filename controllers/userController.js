@@ -64,12 +64,9 @@ const insertUser = async(req,res)=>{
         return res.render("register", { message: "Password and Confirm Password must be same" });
     }
 
-    const otp = otpHelper.generateOtp()
     await otpHelper.sendOtp(mobileNumber)
     try {
-        req.session.otp = otp;
         req.session.userData = req.body;
-
         req.session.mobile = mobileNumber 
         res.render('verifyOtp')
     } catch (error) {
@@ -186,9 +183,8 @@ const forgotPasswordOtp = async(req, res)=>{
     if(!user){
         res.render('forgotPassword',{message:"User Not Registered"})
     }else{
-        await otpHelper.sendOtp(user.mobile,OTP)
-        req.session.otp = OTP
-        req.session.email = user.email
+        await otpHelper.sendOtp(user.mobile)
+        req.session.email = user.email 
         req.session.mobile = req.body.mobile
         res.render('forgotPasswordOtp')
     }

@@ -123,7 +123,7 @@ const getWishListProducts = async (userId) => {
             $pull: { wishList: { productId: proId } },
           }
         ).then((response) => {
-          resolve(response);
+          resolve(response); 
         });
       });
     } catch (error) {
