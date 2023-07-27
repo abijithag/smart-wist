@@ -65,8 +65,7 @@ const insertUser = async(req,res)=>{
     }
 
     const otp = otpHelper.generateOtp()
-    // await otpHelper.sendOtp(mobileNumber,otp)
-      console.log(`Otp is ${otp}`)
+    await otpHelper.sendOtp(mobileNumber)
     try {
         req.session.otp = otp;
         req.session.userData = req.body;
@@ -121,12 +120,9 @@ const resendOTP = async (req, res) => {
       }
   
       // Generate and send new OTP using Twilio
-      const otp = otpHelper.generateOtp()
 
-      req.session.otp = otp
 
-    //   await otpHelper.sendOtp(mobileNumber,otp)
-      console.log(`Resend Otp is ${otp}`)
+      await otpHelper.sendOtp(mobileNumber)
   
       res.render('verifyOtp',{ message: 'OTP resent successfully' });
     } catch (error) {
@@ -139,14 +135,10 @@ const resendOTP = async (req, res) => {
 const verifyOtp = async(req,res)=>{
     const otp = req.body.otp
     try {
-    const sessionOTP = req.session.otp;
     const userData = req.session.userData;
+    const verified = await otpHelper.verifyCode(userData.mno,otp)
 
-    if (!sessionOTP || !userData) {
-        res.render('verifyOtp',{ message: 'Invalid Session' });
-    }else if (sessionOTP !== otp) {
-        res.render('verifyOtp',{ message: 'Invalid OTP' });
-    }else{
+    if(verified){
     const spassword =await securePassword(userData.password)
         const user = new User({
             fname:userData.fname,
@@ -164,7 +156,10 @@ const verifyOtp = async(req,res)=>{
         }else{
             res.render('register',{message:"Registration Failed"})
         }
-    }
+      }else{
+        res.render('verifyOtp',{ message: 'Wrong Otp' });
+
+      }
 
 
     } catch (error) {
@@ -191,11 +186,10 @@ const forgotPasswordOtp = async(req, res)=>{
     if(!user){
         res.render('forgotPassword',{message:"User Not Registered"})
     }else{
-        const OTP = otpHelper.generateOtp()
         await otpHelper.sendOtp(user.mobile,OTP)
-        console.log(`Forgot Password otp is --- ${OTP}`) 
         req.session.otp = OTP
         req.session.email = user.email
+        req.session.mobile = req.body.mobile
         res.render('forgotPasswordOtp')
     }
      
@@ -214,11 +208,10 @@ const loadForgotPassword = async(req,res)=>{
 const resetPasswordOtpVerify = async (req,res)  => {
     try{
         const mobile = req.session.mobile
-        const otp = req.session.otp
         const reqOtp = req.body.otp
-
+        const verified = await otpHelper.verifyCode(mobile,reqOtp)
         const otpHolder = await User.find({ mobile : req.body.mobile })
-        if(otp==reqOtp){
+        if(verified){
             res.render('resetPassword')
         }
         else{

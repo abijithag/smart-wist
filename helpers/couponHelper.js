@@ -13,7 +13,6 @@ const generatorCouponCode =  () => {
           charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
           prefix: "SMART-",
         });
-        console.log(couponCode);
 
         resolve({ status: true, couponCode: couponCode[0] });
       } catch (err) {}
@@ -59,7 +58,6 @@ const generatorCouponCode =  () => {
             resolve(couponAdded);
 
           });
-        console.log(updated);
 
       });
 
@@ -74,7 +72,6 @@ const generatorCouponCode =  () => {
          Coupon.find({ couponCode: couponCode }).then(
           async(couponExist) => {
             if (couponExist.length>0) {
-              console.log(couponExist);
               if (new Date(couponExist[0].validity) - new Date() > 0) {
                 const usersCoupon = await User.findOne({
                   _id: userId,

@@ -86,7 +86,6 @@ const postCheckOut  = async (req, res) => {
 
     try { 
       const checkStock = await orderHelper.checkStock(userId)
-      console.log("checkStock",checkStock);
       if(checkStock){
       if (data.paymentOption === "cod") { 
         const updatedStock = await orderHelper.updateStock(userId)
@@ -143,7 +142,6 @@ const paymentFailed = async(req,res)=>{
       { $pull: { orders: { _id:new ObjectId(order.order.receipt) } } }
 
     )
-    console.log(deleted);
     res.send({status:true})
   } catch (error) {
     

@@ -350,7 +350,6 @@ const changeStatus = async(req,res)=>{
   const orderId = req.body.orderId
   const status = req.body.status
   adminHelper.changeOrderStatus(orderId, status).then((response) => {
-    console.log(response);
     res.json(response);
   });
 

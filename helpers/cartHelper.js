@@ -17,7 +17,6 @@ const addCart = async (productId,userId)=>{
 
     try {
         return new Promise(async(resolve,reject)=>{
-          console.log(productId);
           const quantity = await Cart.aggregate([
             { $match: { user: userId.toString() } },
             { $unwind: "$cartItems" },

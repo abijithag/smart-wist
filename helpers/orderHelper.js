@@ -15,7 +15,6 @@ var instance = new Razorpay({
 });
 
 const placeOrder = (data,user)=>{
-  console.log(data);
     try {
         return new Promise(async (resolve, reject) => {
             const productDetails = await Cart.aggregate([
@@ -298,7 +297,6 @@ const verifyPayment =  async(details) => {
 
         resolve();
       } else {
-        console.log('no matchhhhhhhhhhhhh');
         reject("not match");
       }
     });
