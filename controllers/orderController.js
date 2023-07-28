@@ -112,7 +112,7 @@ const postCheckOut  = async (req, res) => {
     } catch (error) {
       console.log({ error: error.message }, "22");
       res.json({ status: false, error: error.message });
-    }
+    } 
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
