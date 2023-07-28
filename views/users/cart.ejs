@@ -236,9 +236,8 @@
                   const qtyElem = document.querySelector(`#qty-val-${proId}`);
                   qtyElem.value = response.newQuantity;
                   const subTotalVal = document.querySelector(`#subTotal-${proId}`);
-                  console.log("Subtotal;"+subTotalVal)
-                  subTotalVal.innerHTML = response.newSubTotal;
-                  document.getElementById('total').innerHTML = response.cartTotal;
+                  subTotalVal.innerHTML ='₹' + response.newSubTotal;
+                  document.getElementById('total').innerHTML ='₹ ' +response.cartTotal;
 
                 }
                 else if(response.status=='outOfStock'){

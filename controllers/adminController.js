@@ -81,14 +81,14 @@ const loadDashboard = async(req,res)=>{
     ]);
 
 
-    const salesData = await Order.aggregate([
-      { $unwind: "$orders" },
+    const salesData = await Order.aggregate([ 
+      { $unwind: "$orders" }, 
       {
         $match: {
           "orders.orderStatus": "Delivered"  // Consider only completed orders
         }
       },
-      {
+      {  
         $group: {
           _id: {
             $dateToString: {  // Group by the date part of createdAt field
