@@ -124,145 +124,145 @@
 	<script src="../user-assets/js/main.js"></script>
 
 	<script>
-		const myForm = document.getElementById("myForm")
+		// const myForm = document.getElementById("myForm")
   
 
-		const fname = document.getElementById("fname")
-		const lname = document.getElementById("lname")
-		const email = document.getElementById("email")
-		const mno = document.getElementById("mno")
-		const password = document.getElementById("password")
-		const confPassword = document.getElementById("confPassword")
+		// const fname = document.getElementById("fname")
+		// const lname = document.getElementById("lname")
+		// const email = document.getElementById("email")
+		// const mno = document.getElementById("mno")
+		// const password = document.getElementById("password")
+		// const confPassword = document.getElementById("confPassword")
 
 
 		
 
-		const fnameError = document.getElementById("fnameError")
-		const lnameError = document.getElementById("lnameError")
-		const mnoError = document.getElementById("mnoError")
-		const emailError = document.getElementById("emailError")
-		const passwordError = document.getElementById("passwordError")
-		const confPasswordError = document.getElementById("confPasswordError")
+		// const fnameError = document.getElementById("fnameError")
+		// const lnameError = document.getElementById("lnameError")
+		// const mnoError = document.getElementById("mnoError")
+		// const emailError = document.getElementById("emailError")
+		// const passwordError = document.getElementById("passwordError")
+		// const confPasswordError = document.getElementById("confPasswordError")
 
 
 
 
 
 
-		const nameRegex = /^[A-Za-z]+$/;
+		// const nameRegex = /^[A-Za-z]+$/;
 
 
-		function fnameValidation(){
-			const fnameValue = fname.value
-			if(fnameValue.trim()==0){
-				fnameError.innerHTML = 'First Name is required'
-				fnameError.style.color = 'red'
-				fname.style.border = "solid 2px red";
-				return false;
-			}
+		// function fnameValidation(){
+		// 	const fnameValue = fname.value
+		// 	if(fnameValue.trim()==0){
+		// 		fnameError.innerHTML = 'First Name is required'
+		// 		fnameError.style.color = 'red'
+		// 		fname.style.border = "solid 2px red";
+		// 		return false;
+		// 	}
 
-			if(!fnameValue.match(nameRegex)){
-				fnameError.innerHTML = 'First Name is not Valid'
-				fnameError.style.color = 'red'
-				fname.style.border = "solid 2px red";
-				return false;
-			}
-
-
-
-			fnameError.innerHTML = ""
-			fnameError.style.color = "green"
-			fname.style.border = "solid 2px green";
-			return true
-		}
-
-		function lnameValidation(){
-			const lnameValue = lname.value
-			if(lnameValue.trim()==0){
-				lnameError.innerHTML = 'First Name is required'
-				lnameError.style.color = 'red'
-				lname.style.border = "solid 2px red";
-				return false;
-			}
-
-			if(!lnameValue.match(nameRegex)){
-				lnameError.innerHTML = 'First Name is not Valid'
-				lnameError.style.color = 'red'
-				lname.style.border = "solid 2px red";
-				return false;
-			}
+		// 	if(!fnameValue.match(nameRegex)){
+		// 		fnameError.innerHTML = 'First Name is not Valid'
+		// 		fnameError.style.color = 'red'
+		// 		fname.style.border = "solid 2px red";
+		// 		return false;
+		// 	}
 
 
 
-			lnameError.innerHTML = ""
-			lnameError.style.color = "green"
-			lname.style.border = "solid 2px green";
-			return true
+		// 	fnameError.innerHTML = ""
+		// 	fnameError.style.color = "green"
+		// 	fname.style.border = "solid 2px green";
+		// 	return true
+		// }
+
+		// function lnameValidation(){
+		// 	const lnameValue = lname.value
+		// 	if(lnameValue.trim()==0){
+		// 		lnameError.innerHTML = 'First Name is required'
+		// 		lnameError.style.color = 'red'
+		// 		lname.style.border = "solid 2px red";
+		// 		return false;
+		// 	}
+
+		// 	if(!lnameValue.match(nameRegex)){
+		// 		lnameError.innerHTML = 'First Name is not Valid'
+		// 		lnameError.style.color = 'red'
+		// 		lname.style.border = "solid 2px red";
+		// 		return false;
+		// 	}
+
+
+
+		// 	lnameError.innerHTML = ""
+		// 	lnameError.style.color = "green"
+		// 	lname.style.border = "solid 2px green";
+		// 	return true
 		
-		}
+		// }
 
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-		function emailValidation(){
-			const emailValue = email.value
-			if(!emailValue.match(emailRegex)){
-				emailError.innerHTML = 'Email not valid'
-				emailError.style.color = 'red'
-				email.style.border = "solid 2px red";
-				return false;
-			}
-			emailError.innerHTML = ""
-			emailError.style.color = "green"
-			email.style.border = "solid 2px green";
-			return true
-		}
-
-
+		// const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+		// function emailValidation(){
+		// 	const emailValue = email.value
+		// 	if(!emailValue.match(emailRegex)){
+		// 		emailError.innerHTML = 'Email not valid'
+		// 		emailError.style.color = 'red'
+		// 		email.style.border = "solid 2px red";
+		// 		return false;
+		// 	}
+		// 	emailError.innerHTML = ""
+		// 	emailError.style.color = "green"
+		// 	email.style.border = "solid 2px green";
+		// 	return true
+		// }
 
 
-		const mobileRegex =  /^\d{10}$/
-		function mnoValidation(){
-			const mnoValue = mno.value
-			if(!mnoValue.match(mobileRegex)){
-				mnoError.innerHTML = 'Mobile Number not valid'
-				mnoError.style.color = 'red'
-				mno.style.border = "solid 2px red";
-				return false;
-			}
-			mnoError.innerHTML = ""
-			mnoError.style.color = "green"
-			mno.style.border = "solid 2px green";
-			return true
-		}
-		const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
-		function passwordValidation(){
-			const passwordValue = password.value
-			if(!passwordValue.match(passwordRegex)){
-				passwordError.innerHTML = 'Password should contain atleast 8 characters 1 number and a special chara'
-				passwordError.style.color = 'red'
-				password.style.border = "solid 2px red";
-				return false;
-			}
-			passwordError.innerHTML = ""
-			passwordError.style.color = "green"
-			password.style.border = "solid 2px green";
-			return true
-		}
 
-		function confPasswordValidation(){
-			const passwordValue = password.value
-			const confPasswordValue = confPassword.value
-			if(passwordValue !== confPasswordValue){
-				console.log(confPasswordValue);
-				confPasswordError.innerHTML = 'Password and Confirm Password should be same'
-				confPasswordError.style.color = 'red'
-				confPassword.style.border = "solid 2px red";
-				return false;
-			}
-			confPasswordError.innerHTML = ""
-			confPasswordError.style.color = "green"
-			confPassword.style.border = "solid 2px green";
-			return true
-		}
+
+		// const mobileRegex =  /^\d{10}$/
+		// function mnoValidation(){
+		// 	const mnoValue = mno.value
+		// 	if(!mnoValue.match(mobileRegex)){
+		// 		mnoError.innerHTML = 'Mobile Number not valid'
+		// 		mnoError.style.color = 'red'
+		// 		mno.style.border = "solid 2px red";
+		// 		return false;
+		// 	}
+		// 	mnoError.innerHTML = ""
+		// 	mnoError.style.color = "green"
+		// 	mno.style.border = "solid 2px green";
+		// 	return true
+		// }
+		// const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+		// function passwordValidation(){
+		// 	const passwordValue = password.value
+		// 	if(!passwordValue.match(passwordRegex)){
+		// 		passwordError.innerHTML = 'Password should contain atleast 8 characters 1 number and a special chara'
+		// 		passwordError.style.color = 'red'
+		// 		password.style.border = "solid 2px red";
+		// 		return false;
+		// 	}
+		// 	passwordError.innerHTML = ""
+		// 	passwordError.style.color = "green"
+		// 	password.style.border = "solid 2px green";
+		// 	return true
+		// }
+
+		// function confPasswordValidation(){
+		// 	const passwordValue = password.value
+		// 	const confPasswordValue = confPassword.value
+		// 	if(passwordValue !== confPasswordValue){
+		// 		console.log(confPasswordValue);
+		// 		confPasswordError.innerHTML = 'Password and Confirm Password should be same'
+		// 		confPasswordError.style.color = 'red'
+		// 		confPassword.style.border = "solid 2px red";
+		// 		return false;
+		// 	}
+		// 	confPasswordError.innerHTML = ""
+		// 	confPasswordError.style.color = "green"
+		// 	confPassword.style.border = "solid 2px green";
+		// 	return true
+		// }
 
 
 		
@@ -274,15 +274,15 @@
 
 
 
-		myForm.addEventListener("submit",(event)=>{
-			event.preventDefault();
-			if(!fnameValidation() || !lnameValidation() ||  !emailValidation() ||!mnoValidation() || !passwordValidation() || !confPasswordValidation()) {
-				return false
-			}else{
-				myForm.submit()
-			}
+		// myForm.addEventListener("submit",(event)=>{
+		// 	event.preventDefault();
+		// 	if(!fnameValidation() || !lnameValidation() ||  !emailValidation() ||!mnoValidation() || !passwordValidation() || !confPasswordValidation()) {
+		// 		return false
+		// 	}else{
+		// 		myForm.submit()
+		// 	}
 
-		})
+		// })
 
 
 		

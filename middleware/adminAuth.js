@@ -23,6 +23,7 @@ const requireAuth = (req, res, next) => {
 const checkUser = (req, res, next) => {
   const token = req.cookies.jwtAdmin;
   if (token) {
+    console.log(token);
     jwt.verify(token, 'my-secret', async (err, decodedToken) => {
       if (err) {
         res.locals.admin = null;

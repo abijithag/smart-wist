@@ -1,15 +1,19 @@
-// otpHelper.js
+
 const otpGenerator = require('otp-generator');
 
+require('dotenv').config();
 
-const client = require('twilio')(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
-const verifyServiceSid = process.env.TWILIO_VERIFY;
+const {TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN,TWILIO_SERVICE_SID} = process.env
 
+const clint = require('twilio')(TWILIO_ACCOUNT_SID , TWILIO_AUTH_TOKEN,{
+    lazyLoading : true
+})
 
 
 const sendOtp = async (mobileNumber) => {
   try {
-    await client.verify.v2.services(verifyServiceSid).verifications.create({
+    
+    await  clint.verify.v2.services(TWILIO_SERVICE_SID).verifications.create({
       to: `+91${mobileNumber}`,
       channel: 'sms', // You can use 'sms' or 'call' depending on how you want to send the verification code.
     });
@@ -22,7 +26,7 @@ const sendOtp = async (mobileNumber) => {
 const verifyCode = async (mobileNumber, code) => {
   try {
     console.log(mobileNumber);
-    const verification = await client.verify.v2.services(verifyServiceSid).verificationChecks.create({
+    const verification = await clint.verify.v2.services(TWILIO_SERVICE_SID).verificationChecks.create({
       to: `+91${mobileNumber}`,
       code: code,
     });
